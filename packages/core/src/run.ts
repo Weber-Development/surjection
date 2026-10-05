@@ -19,7 +19,7 @@ export function axeRunOptions(options: CheckOptions = {}): axe.RunOptions {
 
 /**
  * Runs the check in the current document (browser, jsdom, happy-dom).
- * Use `@sweber/surjection/playwright` for full pages in a real browser.
+ * Use `@sweberdev/surjection/playwright` for full pages in a real browser.
  */
 export async function checkDocument(
   context: axe.ElementContext = document,

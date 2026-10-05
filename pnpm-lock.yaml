@@ -45,7 +45,7 @@ importers:
 
   packages/react:
     devDependencies:
-      '@sweber/surjection':
+      '@sweberdev/surjection':
         specifier: workspace:*
         version: link:../core
       '@testing-library/react':

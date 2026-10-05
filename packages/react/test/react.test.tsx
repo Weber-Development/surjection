@@ -1,4 +1,4 @@
-import "@sweber/surjection/vitest";
+import "@sweberdev/surjection/vitest";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AnnouncerProvider, SkipLink, useAnnounce, VisuallyHidden } from "../src";

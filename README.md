@@ -6,14 +6,14 @@ Accessibility checks for CI and tests, client-ready reports and accessibility st
 
 | Package | What it does |
 |---|---|
-| [`@sweber/surjection`](packages/core) | axe-core checks for Playwright and Vitest, WCAG 2.2 / EN 301 549 mapping, baseline, Markdown report, accessibility statement generator |
-| [`@sweber/surjection-react`](packages/react) | `SkipLink`, `VisuallyHidden`, `AnnouncerProvider` + `useAnnounce`, `useReducedMotion` |
+| [`@sweberdev/surjection`](packages/core) | axe-core checks for Playwright and Vitest, WCAG 2.2 / EN 301 549 mapping, baseline, Markdown report, accessibility statement generator |
+| [`@sweberdev/surjection-react`](packages/react) | `SkipLink`, `VisuallyHidden`, `AnnouncerProvider` + `useAnnounce`, `useReducedMotion` |
 
 ## Playwright
 
 ```ts
 import { test } from "@playwright/test";
-import { expectAccessible } from "@sweber/surjection/playwright";
+import { expectAccessible } from "@sweberdev/surjection/playwright";
 
 test("home is accessible", async ({ page }) => {
   await page.goto("/");
@@ -26,8 +26,8 @@ test("home is accessible", async ({ page }) => {
 Taking over a site with 200 known issues? Record them once, then CI fails only on new ones:
 
 ```ts
-import { createBaseline } from "@sweber/surjection";
-import { checkPage } from "@sweber/surjection/playwright";
+import { createBaseline } from "@sweberdev/surjection";
+import { checkPage } from "@sweberdev/surjection/playwright";
 
 const baseline = createBaseline([await checkPage(page)]);
 // write baseline to a11y-baseline.json, commit it, then:
@@ -37,7 +37,7 @@ await expectAccessible(page, { baseline });
 ## Vitest
 
 ```ts
-import "@sweber/surjection/vitest";
+import "@sweberdev/surjection/vitest";
 
 it("is accessible", async () => {
   render(<SaveButton />);
@@ -48,7 +48,7 @@ it("is accessible", async () => {
 ## Accessibility statement
 
 ```ts
-import { enforcementBodies, generateStatement } from "@sweber/surjection";
+import { enforcementBodies, generateStatement } from "@sweberdev/surjection";
 
 const { markdown, html } = generateStatement({
   locale: "de-CH",

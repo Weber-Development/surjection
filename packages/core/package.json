@@ -1,5 +1,5 @@
 {
-  "name": "@sweber/surjection",
+  "name": "@sweberdev/surjection",
   "version": "0.0.0",
   "description": "Accessibility checks for CI and development, agency-ready reports and accessibility statements (DE, DE-CH, FR, IT, EN). Built on axe-core. No overlay.",
   "license": "MIT",
