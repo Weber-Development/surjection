@@ -1,5 +1,11 @@
 # @sweberdev/surjection
 
+## 0.2.0
+
+### Minor Changes
+
+- 49319c3: New: `--out-junit` writes a JUnit XML report for GitLab, Azure DevOps and Jenkins; `--viewport mobile|desktop|WxH` checks other screen sizes; `surjection init` creates a config file and a GitHub Actions workflow.
+
 ## 0.1.0
 
 ### Minor Changes
