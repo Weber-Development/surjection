@@ -1,0 +1,32 @@
+{
+  "sections": [
+    {
+      "label": "Start",
+      "items": ["introduction", "getting-started"]
+    },
+    {
+      "label": "Guides",
+      "items": [
+        "guides/cli",
+        "guides/github-actions",
+        "guides/playwright",
+        "guides/vitest",
+        "guides/baseline",
+        "guides/statement",
+        "guides/react"
+      ]
+    },
+    {
+      "label": "Reference",
+      "items": ["reference/config", "reference/api"]
+    },
+    {
+      "label": "Surjection Pro",
+      "items": ["pro/overview", "pro/report", "pro/history", "pro/checklist"]
+    },
+    {
+      "label": "Legal",
+      "items": ["legal"]
+    }
+  ]
+}

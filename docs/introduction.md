@@ -19,9 +19,9 @@ Overlay widgets put a toolbar on top of a site and leave the code unchanged. The
 
 ## Limits of automated testing
 
-Automated tests detect only part of all barriers. They cannot judge whether alternative text is meaningful, whether the focus order makes sense or whether a video has correct captions. Surjection therefore lists rules it could not decide as "needs manual review", and [Surjection Pro](/pro/overview/) adds a guided checklist for the criteria that need a person.
+Automated tests detect only part of all barriers. They cannot judge whether alternative text is meaningful, whether the focus order makes sense or whether a video has correct captions. Surjection therefore lists rules it could not decide as "needs manual review", and [Surjection Pro](pro/overview.md) adds a guided checklist for the criteria that need a person.
 
-A passing run is not proof of conformance with WCAG, EN 301 549, the BFSG or any other law. See [Legal notes](/legal/).
+A passing run is not proof of conformance with WCAG, EN 301 549, the BFSG or any other law. See [Legal notes](legal.md).
 
 ## Packages
 
@@ -29,4 +29,4 @@ A passing run is not proof of conformance with WCAG, EN 301 549, the BFSG or any
 |---|---|---|
 | `@sweberdev/surjection` | MIT | Checks, CLI, baseline, reports, statement generator |
 | `@sweberdev/surjection-react` | MIT | Accessible React building blocks |
-| `@weber-development/surjection-*` | Commercial | [Surjection Pro](/pro/overview/): branded client reports, history across projects, manual checklist |
+| `@weber-development/surjection-*` | Commercial | [Surjection Pro](pro/overview.md): branded client reports, history across projects, manual checklist |

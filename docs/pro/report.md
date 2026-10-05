@@ -10,11 +10,11 @@ description: Accessibility reports in your branding, as HTML or PDF.
 - Cover page with your logo, the client and the date
 - Summary by impact (critical, serious, moderate, minor)
 - The most frequent issues
-- Change since the last check, when a [history](/pro/history/) is available
+- Change since the last check, when a [history](history.md) is available
 - Overview by WCAG 2.2 criterion with the matching EN 301 549 clauses
 - Findings per page with the affected elements and a hint how to fix them
 - Rules that need a manual review
-- Your [manual checklist](/pro/checklist/), when you pass one
+- Your [manual checklist](checklist.md), when you pass one
 - Method and limits of the test
 
 The report is available in German (`de`), Swiss German spelling (`de-CH`), French, Italian and English. The HTML report passes its own accessibility check.

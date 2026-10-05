@@ -23,16 +23,16 @@ Sitemap indexes are followed one level deep. `--max-pages` (default 50) keeps la
 
 | Option | Default | Meaning |
 |---|---|---|
-| `--config <file>` | `surjection.config.json` if present | Read options from a file, see [Configuration](/reference/config/) |
+| `--config <file>` | `surjection.config.json` if present | Read options from a file, see [Configuration](../reference/config.md) |
 | `--standard <id>` | `wcag22aa` | `wcag2a`, `wcag2aa`, `wcag21aa` or `wcag22aa` |
 | `--fail-on <impact>` | `minor` | Lowest impact that fails the run: `minor`, `moderate`, `serious`, `critical` |
 | `--locale <locale>` | `en` | Language of messages and reports: `de`, `de-CH`, `fr`, `it`, `en` |
 | `--exclude <selector>` | | Skip elements you do not control, e.g. a third-party chat widget. Repeatable |
-| `--baseline <file>` | `surjection-baseline.json` | Accepted findings, see [Baseline](/guides/baseline/) |
+| `--baseline <file>` | `surjection-baseline.json` | Accepted findings, see [Baseline](baseline.md) |
 | `--update-baseline` | | Write all current findings into the baseline and exit with `0` |
 | `--best-practice` | | Also run axe-core rules that are not WCAG criteria |
 | `--out-md <file>` | | Markdown report |
-| `--out-json <file>` | | All results as JSON, input for [Surjection Pro](/pro/overview/) |
+| `--out-json <file>` | | All results as JSON, input for [Surjection Pro](../pro/overview.md) |
 | `--project <name>` | | Project name in reports |
 
 ## Exit codes

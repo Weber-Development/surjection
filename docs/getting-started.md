@@ -3,26 +3,14 @@ title: Getting started
 description: Install Surjection and run your first check.
 ---
 
-import { Steps, Tabs, TabItem } from "@astrojs/starlight/components";
-
-<Steps>
-
 1. Install the package and Playwright with a browser:
 
-   <Tabs>
-   <TabItem label="pnpm">
    ```sh
    pnpm add -D @sweberdev/surjection @playwright/test
    pnpm exec playwright install chromium
    ```
-   </TabItem>
-   <TabItem label="npm">
-   ```sh
-   npm i -D @sweberdev/surjection @playwright/test
-   npx playwright install chromium
-   ```
-   </TabItem>
-   </Tabs>
+
+   With npm: `npm i -D @sweberdev/surjection @playwright/test` and `npx playwright install chromium`.
 
 2. Check a page:
 
@@ -38,9 +26,7 @@ import { Steps, Tabs, TabItem } from "@astrojs/starlight/components";
    npx surjection check https://example.ch --out-md a11y.md --out-json a11y.json
    ```
 
-4. Run it on every build. See [GitHub Actions](/guides/github-actions/), or use the [Playwright helper](/guides/playwright/) in your existing end-to-end tests.
-
-</Steps>
+4. Run it on every build. See [GitHub Actions](guides/github-actions.md), or use the [Playwright helper](guides/playwright.md) in your existing end-to-end tests.
 
 ## Requirements
 

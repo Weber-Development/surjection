@@ -4,7 +4,7 @@
   "description": "Small, unstyled accessible building blocks for React: skip link, visually hidden text, live announcements, reduced motion.",
   "license": "MIT",
   "author": "Seya Weber (https://github.com/sxwxbxr)",
-  "homepage": "https://surjection.sweber.dev",
+  "homepage": "https://packages.sweber.dev/surjection/docs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Weber-Development/surjection.git",

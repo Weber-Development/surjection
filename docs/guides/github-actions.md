@@ -40,4 +40,4 @@ jobs:
 
 To check the app built in the same job, start it in the background first, e.g. `npm run build && npm start &`, and point `baseUrl` at `http://localhost:3000`.
 
-Commit `surjection-baseline.json` next to the config when you use a [baseline](/guides/baseline/).
+Commit `surjection-baseline.json` next to the config when you use a [baseline](baseline.md).

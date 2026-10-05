@@ -21,7 +21,7 @@ Fixed: 4  New: 1  Unchanged: 12
   + /kontakt|color-contrast|.footer a
 ```
 
-Elements are matched by page path, rule and selector (the same fingerprint as the [baseline](/guides/baseline/)), so a fixed issue and a new one with the same rule are told apart.
+Elements are matched by page path, rule and selector (the same fingerprint as the [baseline](../guides/baseline.md)), so a fixed issue and a new one with the same rule are told apart.
 
 ## dashboard
 

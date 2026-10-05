@@ -21,7 +21,7 @@ npx surjection-checklist status --checklist checklist.json
 | `edit` | Writes a self-contained HTML page. Set each criterion to passed, failed or not applicable, add notes, then download the updated `checklist.json` |
 | `status` | Prints how many criteria are untested, passed, failed and not applicable |
 | `markdown` | Writes the checklist as Markdown |
-| `statement` | Writes the conformance status and known issues for the [accessibility statement](/guides/statement/) |
+| `statement` | Writes the conformance status and known issues for the [accessibility statement](../guides/statement.md) |
 
 The editor saves your progress in the browser until you download the file. It works offline and sends nothing anywhere.
 
@@ -31,6 +31,6 @@ The editor saves your progress in the browser until you download the file. It wo
 npx surjection-checklist statement --checklist checklist.json --locale de --out statement-fields.json
 ```
 
-Merge the fields into your statement config and run `surjection statement`. Pass the checklist to the [report](/pro/report/) with `--checklist` to include it as a section.
+Merge the fields into your statement config and run `surjection statement`. Pass the checklist to the [report](report.md) with `--checklist` to include it as a section.
 
 `statement` refuses to run while criteria are still untested. The status is "fully conformant" only when no criterion failed, and every failed criterion becomes a known issue (your note, or the criterion title). Whether the result holds remains your judgement as the tester.

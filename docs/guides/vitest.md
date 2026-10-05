@@ -22,6 +22,6 @@ it("is accessible", async () => {
 });
 ```
 
-The matcher switches off page-level rules (landmarks, a main heading) that make no sense for a single component. It accepts the same options as [Playwright](/guides/playwright/).
+The matcher switches off page-level rules (landmarks, a main heading) that make no sense for a single component. It accepts the same options as [Playwright](playwright.md).
 
 jsdom does not render CSS, so colour contrast cannot be checked here. Cover it with the Playwright helper or the CLI.

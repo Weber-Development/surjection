@@ -48,4 +48,4 @@ The output extension decides the format: `.html` writes HTML, anything else Mark
 | `contact` | Email, optional phone and postal address for feedback |
 | `enforcement` | The authority people can turn to. Presets: `enforcementBodies.DE`, `enforcementBodies.AT` |
 
-The text is a starting point, not legal advice. Check the requirements for your service and have the statement reviewed before you publish it. [Surjection Pro](/pro/checklist/) fills `status` and `knownIssues` from your manual checklist.
+The text is a starting point, not legal advice. Check the requirements for your service and have the statement reviewed before you publish it. [Surjection Pro](../pro/checklist.md) fills `status` and `knownIssues` from your manual checklist.
