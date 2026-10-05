@@ -48,9 +48,11 @@ Commit `surjection-baseline.json` next to the config when you use a [baseline](b
 
 ```yaml title=".gitlab-ci.yml"
 accessibility:
-  image: mcr.microsoft.com/playwright:v1.56.0-noble
+  image: node:22
   script:
-    - npx -y @sweberdev/surjection check --config surjection.config.json --out-junit a11y.xml
+    - npm i -g @sweberdev/surjection @playwright/test
+    - npx playwright install --with-deps chromium
+    - surjection check --config surjection.config.json --out-junit a11y.xml
   artifacts:
     when: always
     reports:
