@@ -3,7 +3,7 @@ title: GitHub Actions
 description: Check every pull request and show the report in the job summary.
 ---
 
-The CLI adds its Markdown report to the job summary when it runs in GitHub Actions. This workflow checks a preview deployment on every pull request:
+The CLI adds its Markdown report to the job summary when it runs in GitHub Actions. `npx surjection init` writes a ready workflow and config file for you. This workflow checks a preview deployment on every pull request:
 
 ```yaml title=".github/workflows/accessibility.yml"
 name: Accessibility
@@ -41,3 +41,18 @@ jobs:
 To check the app built in the same job, start it in the background first, e.g. `npm run build && npm start &`, and point `baseUrl` at `http://localhost:3000`.
 
 Commit `surjection-baseline.json` next to the config when you use a [baseline](baseline.md).
+
+## GitLab, Azure DevOps, Jenkins
+
+`--out-junit a11y.xml` writes a JUnit report that these systems show as test results, one failed test per rule and page. In GitLab:
+
+```yaml title=".gitlab-ci.yml"
+accessibility:
+  image: mcr.microsoft.com/playwright:v1.56.0-noble
+  script:
+    - npx -y @sweberdev/surjection check --config surjection.config.json --out-junit a11y.xml
+  artifacts:
+    when: always
+    reports:
+      junit: a11y.xml
+```

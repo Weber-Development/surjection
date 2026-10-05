@@ -2,6 +2,7 @@ export { type AssertOptions, failingResult } from "./assert";
 export { applyBaseline, type Baseline, createBaseline, fingerprints } from "./baseline";
 export { reportMessages } from "./i18n";
 export { countByImpact, toPageResult } from "./normalize";
+export { toJUnit } from "./report/junit";
 export { type ReportOptions, toMarkdown } from "./report/markdown";
 export { axeRunOptions, checkDocument } from "./run";
 export {

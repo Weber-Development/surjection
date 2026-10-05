@@ -21,6 +21,22 @@ export interface SurjectionConfig {
   baseline?: string;
   /** Project name shown in reports. */
   project?: string;
+  /** Window size: "desktop" (1280x800, default), "mobile" (390x844) or "<width>x<height>". */
+  viewport?: string;
+}
+
+export const VIEWPORTS = {
+  desktop: { width: 1280, height: 800 },
+  mobile: { width: 390, height: 844 },
+} as const;
+
+/** Parses "mobile", "desktop" or "390x844". */
+export function parseViewport(value: string | undefined): { width: number; height: number } {
+  if (!value) return VIEWPORTS.desktop;
+  if (value in VIEWPORTS) return VIEWPORTS[value as keyof typeof VIEWPORTS];
+  const m = /^(\d{2,5})x(\d{2,5})$/.exec(value);
+  if (!m) throw new Error(`Invalid viewport "${value}". Use desktop, mobile or <width>x<height>.`);
+  return { width: Number(m[1]), height: Number(m[2]) };
 }
 
 export const DEFAULT_CONFIG_FILE = "surjection.config.json";

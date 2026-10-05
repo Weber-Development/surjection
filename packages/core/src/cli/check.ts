@@ -3,9 +3,10 @@ import type { Browser } from "@playwright/test";
 import { failingResult } from "../assert";
 import { applyBaseline, type Baseline, createBaseline } from "../baseline";
 import { checkPage } from "../playwright";
+import { toJUnit } from "../report/junit";
 import { toMarkdown } from "../report/markdown";
 import type { PageResult, ResultsFile } from "../types";
-import { resolveUrls, type SurjectionConfig } from "./config";
+import { parseViewport, resolveUrls, type SurjectionConfig } from "./config";
 import { loadSitemap } from "./sitemap";
 
 export interface CheckRun extends SurjectionConfig {
@@ -14,6 +15,8 @@ export interface CheckRun extends SurjectionConfig {
   outMarkdown?: string;
   /** Write all results as JSON here (input for Surjection Pro reports and history). */
   outJson?: string;
+  /** Write a JUnit XML report here, for CI test report views. */
+  outJUnit?: string;
   log?: (line: string) => void;
 }
 
@@ -64,11 +67,12 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
       ? (JSON.parse(readFileSync(baselinePath, "utf8")) as Baseline)
       : undefined;
 
+  const viewport = parseViewport(run.viewport);
   const ownBrowser = browser ? undefined : await launchChromium();
   const active = (browser ?? ownBrowser) as Browser;
   const pages: PageResult[] = [];
   try {
-    const context = await active.newContext();
+    const context = await active.newContext({ viewport, isMobile: run.viewport === "mobile" });
     for (const url of urls) {
       const page = await context.newPage();
       try {
@@ -106,11 +110,13 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
     .filter((page) => page.findings.length > 0);
   const failed = !run.updateBaseline && failing.length > 0;
 
-  const markdown = toMarkdown(baseline ? pages.map((p) => applyBaseline(p, baseline)) : pages, {
+  const reported = baseline ? pages.map((p) => applyBaseline(p, baseline)) : pages;
+  const markdown = toMarkdown(reported, {
     locale: run.locale ?? "en",
     ...(run.project && { project: run.project }),
   });
   if (run.outMarkdown) writeFileSync(run.outMarkdown, markdown);
+  if (run.outJUnit) writeFileSync(run.outJUnit, toJUnit(reported));
   if (run.outJson) {
     const file: ResultsFile = {
       version: 1,

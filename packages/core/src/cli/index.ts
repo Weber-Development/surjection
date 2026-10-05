@@ -2,11 +2,13 @@ import { parseArgs } from "node:util";
 import type { Impact, Locale } from "../types";
 import { runCheck } from "./check";
 import { loadConfig } from "./config";
+import { runInit } from "./init";
 import { runStatement } from "./statement";
 
 const HELP = `Usage:
   surjection check [urls...] [options]
   surjection statement --config statement.json --out erklaerung.md
+  surjection init [--base-url https://example.ch] [--sitemap] [--project "Muster AG"] [--no-workflow]
 
 check options:
   --config <file>        Config file (default: surjection.config.json if present)
@@ -22,6 +24,8 @@ check options:
   --best-practice        Also run axe-core best-practice rules
   --out-md <file>        Write the Markdown report
   --out-json <file>      Write all results as JSON
+  --out-junit <file>     Write a JUnit XML report (GitLab, Azure DevOps, Jenkins)
+  --viewport <size>      desktop (default) | mobile | <width>x<height>
   --project <name>       Project name for reports
 
 Exit code 1 when issues remain after baseline and --fail-on.
@@ -46,6 +50,29 @@ export async function main(argv: string[]): Promise<number> {
     console.log(`Statement written to ${values.out}.`);
     return 0;
   }
+  if (command === "init") {
+    const { values } = parseArgs({
+      args: rest,
+      options: {
+        "base-url": { type: "string" },
+        sitemap: { type: "boolean" },
+        project: { type: "string" },
+        "no-workflow": { type: "boolean" },
+      },
+    });
+    const written = runInit({
+      ...(values["base-url"] && { baseUrl: values["base-url"] }),
+      sitemap: values.sitemap ?? false,
+      ...(values.project && { project: values.project }),
+      workflow: !values["no-workflow"],
+    });
+    console.log(
+      written.length > 0
+        ? `Created ${written.join(", ")}. Run: npx surjection check`
+        : "Nothing to do: the files exist already.",
+    );
+    return 0;
+  }
   if (command !== "check") {
     console.error(`Unknown command "${command}".\n\n${HELP}`);
     return 2;
@@ -67,6 +94,8 @@ export async function main(argv: string[]): Promise<number> {
       "best-practice": { type: "boolean" },
       "out-md": { type: "string" },
       "out-json": { type: "string" },
+      "out-junit": { type: "string" },
+      viewport: { type: "string" },
       project: { type: "string" },
     },
   });
@@ -87,6 +116,8 @@ export async function main(argv: string[]): Promise<number> {
     updateBaseline: values["update-baseline"] ?? false,
     ...(values["out-md"] && { outMarkdown: values["out-md"] }),
     ...(values["out-json"] && { outJson: values["out-json"] }),
+    ...(values["out-junit"] && { outJUnit: values["out-junit"] }),
+    ...(values.viewport && { viewport: values.viewport }),
   });
   if (outcome.failed) {
     const issues = outcome.failing.reduce(

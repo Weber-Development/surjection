@@ -6,6 +6,14 @@ export {
   launchChromium,
   runCheck,
 } from "./cli/check";
-export { DEFAULT_CONFIG_FILE, loadConfig, resolveUrls, type SurjectionConfig } from "./cli/config";
+export {
+  DEFAULT_CONFIG_FILE,
+  loadConfig,
+  parseViewport,
+  resolveUrls,
+  type SurjectionConfig,
+  VIEWPORTS,
+} from "./cli/config";
+export { type InitOptions, runInit, WORKFLOW_FILE } from "./cli/init";
 export { loadSitemap, parseSitemap } from "./cli/sitemap";
 export { runStatement } from "./cli/statement";

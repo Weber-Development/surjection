@@ -20,7 +20,7 @@ npx surjection check --sitemap https://example.ch/sitemap.xml --max-pages 100 --
 npx surjection statement --config statement.json --out erklaerung.html
 ```
 
-Options can also live in `surjection.config.json`. In GitHub Actions the report is added to the job summary automatically. `--out-json` writes all results for Surjection Pro reports and history.
+Options can also live in `surjection.config.json`. In GitHub Actions the report is added to the job summary automatically. `--out-json` writes all results for Surjection Pro reports and history, `--out-junit` a JUnit XML for GitLab, Azure DevOps or Jenkins, and `--viewport mobile` checks the mobile layout. `npx surjection init` sets up the config file and a GitHub Actions workflow.
 
 ## Playwright
 

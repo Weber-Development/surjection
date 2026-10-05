@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { Browser } from "@playwright/test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { launchChromium, resolveUrls, runCheck } from "../src/node";
+import { launchChromium, parseViewport, resolveUrls, runCheck, runInit } from "../src/node";
 import type { ResultsFile } from "../src/types";
 
 const fixture = (name: string) => pathToFileURL(join(__dirname, "fixtures", name)).toString();
@@ -53,6 +53,22 @@ describe("runCheck", () => {
     const json = JSON.parse(readFileSync(outJson, "utf8")) as ResultsFile;
     expect(json.project).toBe("Muster AG");
     expect(json.pages).toHaveLength(1);
+
+    const outJUnit = join(dir, "junit.xml");
+    await runCheck(
+      {
+        urls: [fixture("bad.html")],
+        baseline: join(dir, "none.json"),
+        viewport: "mobile",
+        outJUnit,
+        log: silent,
+      },
+      browser,
+    );
+    const xml = readFileSync(outJUnit, "utf8");
+    expect(xml).toContain("<testsuites");
+    expect(xml).toContain('name="image-alt"');
+    expect(xml).toContain("<failure");
 
     const excluded = await runCheck(
       {
@@ -108,5 +124,27 @@ describe("resolveUrls", () => {
 
   it("asks for a base URL for relative paths", () => {
     expect(() => resolveUrls(["/shop"], undefined)).toThrow(/--base-url/);
+  });
+});
+
+describe("parseViewport", () => {
+  it("knows presets and WxH", () => {
+    expect(parseViewport(undefined)).toEqual({ width: 1280, height: 800 });
+    expect(parseViewport("mobile")).toEqual({ width: 390, height: 844 });
+    expect(parseViewport("1024x768")).toEqual({ width: 1024, height: 768 });
+    expect(() => parseViewport("huge")).toThrow();
+  });
+});
+
+describe("runInit", () => {
+  it("writes config and workflow once", () => {
+    const cwd = mkdtempSync(join(tmpdir(), "surjection-init-"));
+    const written = runInit({ cwd, baseUrl: "https://muster.ch", sitemap: true });
+    expect(written).toHaveLength(2);
+    const config = JSON.parse(readFileSync(join(cwd, "surjection.config.json"), "utf8"));
+    expect(config.baseUrl).toBe("https://muster.ch");
+    expect(config.sitemap).toBe("/sitemap.xml");
+    expect(existsSync(join(cwd, ".github/workflows/accessibility.yml"))).toBe(true);
+    expect(runInit({ cwd })).toHaveLength(0);
   });
 });

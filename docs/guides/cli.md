@@ -6,7 +6,12 @@ description: Check a whole site from the command line.
 ```sh
 npx surjection check [urls...] [options]
 npx surjection statement --config statement.json --out erklaerung.md
+npx surjection init --base-url https://example.ch --sitemap
 ```
+
+## Start a project
+
+`surjection init` writes a `surjection.config.json` and a GitHub Actions workflow (`.github/workflows/accessibility.yml`) that checks every pull request and runs once a week. Existing files are never overwritten. `--no-workflow` skips the workflow, `--project` sets the project name.
 
 ## Which pages
 
@@ -33,6 +38,8 @@ Sitemap indexes are followed one level deep. `--max-pages` (default 50) keeps la
 | `--best-practice` | | Also run axe-core rules that are not WCAG criteria |
 | `--out-md <file>` | | Markdown report |
 | `--out-json <file>` | | All results as JSON, input for [Surjection Pro](../pro/overview.md) |
+| `--out-junit <file>` | | JUnit XML: one test suite per page, one failed test per rule. GitLab, Azure DevOps and Jenkins show it as test results |
+| `--viewport <size>` | `desktop` | `desktop` (1280×800), `mobile` (390×844, touch) or `<width>x<height>`, e.g. to catch issues in the mobile menu |
 | `--project <name>` | | Project name in reports |
 
 ## Exit codes
