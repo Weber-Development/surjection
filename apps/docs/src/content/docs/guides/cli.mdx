@@ -1,0 +1,48 @@
+---
+title: CLI
+description: Check a whole site from the command line.
+---
+
+```sh
+npx surjection check [urls...] [options]
+npx surjection statement --config statement.json --out erklaerung.md
+```
+
+## Which pages
+
+Pass absolute URLs, paths with `--base-url`, or a sitemap:
+
+```sh
+npx surjection check --base-url https://preview.example.ch / /shop /kontakt
+npx surjection check --sitemap https://example.ch/sitemap.xml --max-pages 100
+```
+
+Sitemap indexes are followed one level deep. `--max-pages` (default 50) keeps large shops manageable.
+
+## Options
+
+| Option | Default | Meaning |
+|---|---|---|
+| `--config <file>` | `surjection.config.json` if present | Read options from a file, see [Configuration](/reference/config/) |
+| `--standard <id>` | `wcag22aa` | `wcag2a`, `wcag2aa`, `wcag21aa` or `wcag22aa` |
+| `--fail-on <impact>` | `minor` | Lowest impact that fails the run: `minor`, `moderate`, `serious`, `critical` |
+| `--locale <locale>` | `en` | Language of messages and reports: `de`, `de-CH`, `fr`, `it`, `en` |
+| `--exclude <selector>` | | Skip elements you do not control, e.g. a third-party chat widget. Repeatable |
+| `--baseline <file>` | `surjection-baseline.json` | Accepted findings, see [Baseline](/guides/baseline/) |
+| `--update-baseline` | | Write all current findings into the baseline and exit with `0` |
+| `--best-practice` | | Also run axe-core rules that are not WCAG criteria |
+| `--out-md <file>` | | Markdown report |
+| `--out-json <file>` | | All results as JSON, input for [Surjection Pro](/pro/overview/) |
+| `--project <name>` | | Project name in reports |
+
+## Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | No failing issues |
+| `1` | Issues remain after baseline and `--fail-on` |
+| `2` | Usage or runtime error, e.g. Playwright missing |
+
+## Browser
+
+The CLI starts Chromium through Playwright. Set `SURJECTION_CHROMIUM_PATH` to use a browser that is already installed.

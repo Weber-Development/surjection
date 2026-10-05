@@ -1,0 +1,53 @@
+---
+title: Surjection Pro
+description: Branded client reports, history across projects and the WCAG 2.2 checklist.
+---
+
+Surjection Pro adds what an agency needs to hand accessibility work to a client. It builds on the `results.json` that `surjection check --out-json` writes, so the free package stays the engine.
+
+| Package | What it does |
+|---|---|
+| [`@weber-development/surjection-report`](/pro/report/) | Client report as HTML or PDF with your logo and colour, in German, Swiss German, French, Italian and English |
+| [`@weber-development/surjection-history`](/pro/history/) | Records every run per project and renders a dashboard with status, change and trend |
+| [`@weber-development/surjection-checklist`](/pro/checklist/) | The 55 WCAG 2.2 A/AA success criteria with instructions for manual testing, a browser editor and export to the accessibility statement |
+
+## Licence and plans
+
+Plans and prices are on [packages.sweber.dev/surjection](https://packages.sweber.dev/surjection). After cancelling a subscription, the versions you installed keep working; only updates and access to new versions end.
+
+## Installation
+
+The packages are delivered through GitHub Packages. After purchase you get read access to the repository `Weber-Development/surjection-pro-dist`, which contains the full installation guide. In short:
+
+```ini title=".npmrc"
+@weber-development:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${SURJECTION_PRO_TOKEN}
+```
+
+```sh
+npm i -D @sweberdev/surjection @weber-development/surjection-report @weber-development/surjection-history @weber-development/surjection-checklist
+```
+
+`SURJECTION_PRO_TOKEN` is a classic GitHub token with only the `read:packages` scope. Never commit it.
+
+## A typical client workflow
+
+```sh
+# 1. Automated check of the client site
+npx surjection check --config surjection.config.json --out-json a11y.json
+
+# 2. Keep the run in the history
+npx surjection-history record --results a11y.json
+
+# 3. Manual review: mark automated failures, then work through the rest in the browser
+npx surjection-checklist apply --checklist checklist.json --results a11y.json
+npx surjection-checklist edit --checklist checklist.json --locale de --out checklist.html
+
+# 4. Report for the client
+npx surjection-report --results a11y.json --brand brand.json --checklist checklist.json \
+  --history-dir .surjection-history --locale de --out report.pdf
+```
+
+:::caution
+A report or checklist from Surjection documents a test. It does not certify conformance with WCAG, EN 301 549, the BFSG, the Swiss BehiG or any other law. See [Legal notice](/legal/).
+:::
