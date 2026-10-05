@@ -24,6 +24,7 @@ The report is available in German (`de`), Swiss German spelling (`de-CH`), Frenc
 ```sh
 npx surjection check --config surjection.config.json --out-json a11y.json
 npx surjection-report --results a11y.json --brand brand.json --client "Muster AG" --locale de --out report.pdf
+npx surjection-report --results a11y.json --locale de --out massnahmen.csv
 ```
 
 | Option | Meaning |
@@ -36,7 +37,7 @@ npx surjection-report --results a11y.json --brand brand.json --client "Muster AG
 | `--history-dir` | History folder from `surjection-history`, for trend and comparison |
 | `--locale` | `de`, `de-CH`, `fr`, `it` or `en` (default) |
 | `--standard` | Text for the target standard (default: WCAG 2.2 AA) |
-| `--out` | `.html` or `.pdf` |
+| `--out` | `.html`, `.pdf` or `.csv` |
 
 ## Branding
 
@@ -52,6 +53,10 @@ npx surjection-report --results a11y.json --brand brand.json --client "Muster AG
 ```
 
 The logo can be a URL or a `data:` URL. A light brand colour is darkened automatically until text on it reaches a contrast of 4.5:1.
+
+## Fix list (CSV)
+
+With `--out massnahmen.csv` you get a fix list instead of a report: one row per affected element with page, rule, impact, WCAG and EN 301 549 criteria, selector and what to do, plus empty Status and Note columns for the team that fixes it. The file uses `;` and a BOM, so Excel opens it directly with umlauts intact. Only `--results` and `--locale` are needed. In code: `toFixListCsv(results, { locale: "de-CH" })`.
 
 ## PDF
 
