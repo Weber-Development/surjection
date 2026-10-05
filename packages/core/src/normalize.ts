@@ -40,8 +40,9 @@ export function toPageResult(results: AxeResults, title?: string): PageResult {
   };
 }
 
+/** Counts affected elements per impact, so totals match what a developer has to fix. */
 export function countByImpact(findings: Finding[]): Record<Impact, number> {
   const counts: Record<Impact, number> = { critical: 0, serious: 0, moderate: 0, minor: 0 };
-  for (const finding of findings) counts[finding.impact] += 1;
+  for (const finding of findings) counts[finding.impact] += finding.nodes.length;
   return counts;
 }

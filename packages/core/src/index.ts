@@ -20,6 +20,7 @@ export type {
   Impact,
   Locale,
   PageResult,
+  ResultsFile,
   WcagLevel,
 } from "./types";
 export { criteriaFromTags } from "./wcag";

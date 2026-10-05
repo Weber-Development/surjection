@@ -55,3 +55,11 @@ export interface CheckOptions {
   /** Language of axe-core messages. Default: "en". */
   locale?: Locale;
 }
+
+/** File written by `surjection check --out-json`; input for Surjection Pro reports and history. */
+export interface ResultsFile {
+  version: 1;
+  project?: string;
+  createdAt: string;
+  pages: PageResult[];
+}

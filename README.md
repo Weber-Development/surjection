@@ -9,6 +9,19 @@ Accessibility checks for CI and tests, client-ready reports and accessibility st
 | [`@sweberdev/surjection`](packages/core) | axe-core checks for Playwright and Vitest, WCAG 2.2 / EN 301 549 mapping, baseline, Markdown report, accessibility statement generator |
 | [`@sweberdev/surjection-react`](packages/react) | `SkipLink`, `VisuallyHidden`, `AnnouncerProvider` + `useAnnounce`, `useReducedMotion` |
 
+## CLI
+
+Check a whole site in CI, with a baseline and a report:
+
+```sh
+npm i -D @sweberdev/surjection @playwright/test && npx playwright install chromium
+npx surjection check --base-url https://preview.example.ch / /shop /kontakt --fail-on serious --out-md a11y.md
+npx surjection check --sitemap https://example.ch/sitemap.xml --max-pages 100 --update-baseline
+npx surjection statement --config statement.json --out erklaerung.html
+```
+
+Options can also live in `surjection.config.json`. In GitHub Actions the report is added to the job summary automatically. `--out-json` writes all results for Surjection Pro reports and history.
+
 ## Playwright
 
 ```ts
