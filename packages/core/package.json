@@ -1,0 +1,101 @@
+{
+  "name": "@sweber/surjection",
+  "version": "0.0.0",
+  "description": "Accessibility checks for CI and development, agency-ready reports and accessibility statements (DE, DE-CH, FR, IT, EN). Built on axe-core. No overlay.",
+  "license": "MIT",
+  "author": "Seya Weber (https://github.com/sxwxbxr)",
+  "homepage": "https://surjection.sweber.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Weber-Development/surjection.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/Weber-Development/surjection/issues"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./playwright": {
+      "import": {
+        "types": "./dist/playwright.d.ts",
+        "default": "./dist/playwright.js"
+      },
+      "require": {
+        "types": "./dist/playwright.d.cts",
+        "default": "./dist/playwright.cjs"
+      }
+    },
+    "./vitest": {
+      "import": {
+        "types": "./dist/vitest.d.ts",
+        "default": "./dist/vitest.js"
+      },
+      "require": {
+        "types": "./dist/vitest.d.cts",
+        "default": "./dist/vitest.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "axe-core",
+    "bfsg",
+    "eaa",
+    "en-301-549",
+    "barrierefreiheit"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "axe-core": "^4.10.0"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.40",
+    "vitest": ">=3"
+  },
+  "peerDependenciesMeta": {
+    "@playwright/test": {
+      "optional": true
+    },
+    "vitest": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "jsdom": "^27.0.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.0",
+    "vitest": "^5.0.3"
+  }
+}
