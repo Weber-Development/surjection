@@ -75,7 +75,7 @@ npx surjection check --config surjection.config.json --screenshots a11y-shots \
 npx surjection-report --results a11y.json --brand brand.json --client "Muster AG" --out report.pdf
 ```
 
-Surjection copies the old screenshots aside before the run, takes new ones of the same elements and records each issue that is gone as `fixed`. The report gets the section "Fixed since the last report" with the image before and after for every item, in HTML, PDF and Word. An element that was removed from the page is listed without an after image. Pages are matched by path, so a preview and the live site can be compared.
+Surjection copies the old screenshots aside before the run, takes new ones of the same elements and records each issue that is gone as `fixed`. The report gets the section "Fixed since the last report" with the image before and after for every item, in HTML, PDF and Word. An element that was removed from the page is listed without an after image. Many fixes are invisible (alt text, labels, `lang`): there both images look the same, and the list is the evidence. Contrast, size and layout fixes show best. Pages are matched by path, so a preview and the live site can be compared.
 
 ## Word (DOCX)
 
