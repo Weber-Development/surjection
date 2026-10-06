@@ -1,5 +1,11 @@
 # @sweberdev/surjection-react
 
+## 0.7.0
+
+### Minor Changes
+
+- 3dc86f5: New: `--out-sarif` writes SARIF 2.1.0; `--color-scheme dark` and `--reduced-motion` (config: `colorScheme`, `reducedMotion`) emulate visitor settings; the package ships `surjection.config.schema.json` and `surjection init` references it as `$schema` for completion and validation in editors.
+
 ## 0.6.0
 
 ### Minor Changes
