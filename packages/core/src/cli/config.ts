@@ -57,6 +57,8 @@ export interface SurjectionConfig {
   layout?: boolean;
   /** Folder for screenshots of the affected elements, as evidence for reports. */
   screenshots?: string;
+  /** Results of an earlier run (--out-json). Fixed issues get a before and after screenshot. */
+  compareWith?: string;
   /** Playwright storage state (cookies, local storage) to check pages behind a login. */
   storageState?: string;
 }

@@ -2,6 +2,7 @@ import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs
 import type { Browser } from "@playwright/test";
 import { failingResult } from "../assert";
 import { applyBaseline, type Baseline, createBaseline } from "../baseline";
+import { loadPreviousRun, recordFixed } from "../compare";
 import { checkPage } from "../playwright";
 import { toJUnit } from "../report/junit";
 import { toMarkdown } from "../report/markdown";
@@ -72,6 +73,9 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
       ? (JSON.parse(readFileSync(baselinePath, "utf8")) as Baseline)
       : undefined;
 
+  const previousRun = run.compareWith
+    ? loadPreviousRun(run.compareWith, run.screenshots)
+    : undefined;
   const viewport = parseViewport(run.viewport);
   const ownBrowser = browser ? undefined : await launchChromium();
   const active = (browser ?? ownBrowser) as Browser;
@@ -111,6 +115,11 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
         if (target.state) result.url = target.label;
         if (run.screenshots)
           await captureEvidence(page, result, { dir: run.screenshots, pageIndex: pages.length });
+        if (previousRun)
+          await recordFixed(page, result, previousRun, {
+            ...(run.screenshots && { dir: run.screenshots }),
+            pageIndex: pages.length,
+          });
         pages.push(result);
         const count = result.findings.reduce((n, f) => n + f.nodes.length, 0);
         log(`${count === 0 ? "✓" : "✗"} ${target.label} (${count} issue${count === 1 ? "" : "s"})`);

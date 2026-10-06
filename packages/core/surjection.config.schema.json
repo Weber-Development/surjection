@@ -45,6 +45,10 @@
       "type": "string",
       "description": "Playwright storage state for pages behind a login."
     },
+    "compareWith": {
+      "type": "string",
+      "description": "Results (--out-json) of an earlier run; fixed issues get before and after screenshots."
+    },
     "colorScheme": { "enum": ["light", "dark"] },
     "reducedMotion": { "type": "boolean", "default": false },
     "states": {

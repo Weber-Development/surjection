@@ -36,6 +36,17 @@ export interface Finding {
   nodes: FindingNode[];
 }
 
+/** Something the previous run reported and this run no longer does (`--compare-with`). */
+export interface FixedItem {
+  rule: string;
+  help: string;
+  target: string;
+  /** Screenshot of the element in the previous run. */
+  before?: string;
+  /** Screenshot of the same element now. */
+  after?: string;
+}
+
 export interface PageResult {
   url: string;
   title: string | undefined;
@@ -45,6 +56,8 @@ export interface PageResult {
   passedRules: number;
   /** Rules axe-core could not decide automatically; need manual review. */
   incomplete: Finding[];
+  /** Issues of the previous run that are gone, with before and after screenshots. */
+  fixed?: FixedItem[];
 }
 
 export interface CheckOptions {

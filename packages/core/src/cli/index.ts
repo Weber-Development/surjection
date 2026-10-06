@@ -27,6 +27,7 @@ check options:
   --out-junit <file>     Write a JUnit XML report (GitLab, Azure DevOps, Jenkins)
   --out-sarif <file>     Write SARIF 2.1.0 for tools that read static analysis results
   --color-scheme <s>     light | dark: emulate the visitor's colour scheme
+  --compare-with <file>  Earlier --out-json results: fixed issues get before/after screenshots (with --screenshots)
   --reduced-motion       Emulate "reduce motion"
   --viewport <size>      desktop (default) | mobile | <width>x<height>
   --screenshots <dir>    Screenshot every affected element (evidence for Pro reports)
@@ -111,6 +112,7 @@ export async function main(argv: string[]): Promise<number> {
       "out-sarif": { type: "string" },
       "color-scheme": { type: "string" },
       "reduced-motion": { type: "boolean" },
+      "compare-with": { type: "string" },
       viewport: { type: "string" },
       keyboard: { type: "boolean" },
       layout: { type: "boolean" },
@@ -140,6 +142,7 @@ export async function main(argv: string[]): Promise<number> {
     ...(values["out-sarif"] && { outSarif: values["out-sarif"] }),
     ...(values["color-scheme"] && { colorScheme: parseColorScheme(values["color-scheme"]) }),
     ...(values["reduced-motion"] && { reducedMotion: true }),
+    ...(values["compare-with"] && { compareWith: values["compare-with"] }),
     ...(values.viewport && { viewport: values.viewport }),
     ...(values.keyboard && { keyboard: true }),
     ...(values.layout && { layout: true }),

@@ -40,6 +40,7 @@ The CLI reads `surjection.config.json` from the working directory, or the file p
 | `layout` | boolean | `false` |
 | `keyboard` | boolean | `false` |
 | `storageState` | string | |
+| `compareWith` | string | |
 | `colorScheme` | `light` \| `dark` | |
 | `reducedMotion` | boolean | `false` |
 | `states` | `{ name, url?, steps }[]` | `[]` |

@@ -65,6 +65,18 @@ npx surjection-report --results a11y.json --brand brand.json --locale de --out r
 
 The paths in `a11y.json` are resolved relative to the results file or the working directory. Elements inside iframes or shadow DOM and invisible elements get no picture.
 
+## Fixed since the last report (before and after)
+
+Show the client what you fixed. Keep the results of the last run and pass them to the next one:
+
+```sh
+npx surjection check --config surjection.config.json --screenshots a11y-shots \
+  --compare-with last-a11y.json --out-json a11y.json
+npx surjection-report --results a11y.json --brand brand.json --client "Muster AG" --out report.pdf
+```
+
+Surjection copies the old screenshots aside before the run, takes new ones of the same elements and records each issue that is gone as `fixed`. The report gets the section "Fixed since the last report" with the image before and after for every item, in HTML, PDF and Word. An element that was removed from the page is listed without an after image. Pages are matched by path, so a preview and the live site can be compared.
+
 ## Word (DOCX)
 
 With `--out report.docx` you get the same content as an editable Word document, for clients who want to adjust texts or forward the report inside their organisation. The file uses real headings, table header rows, the document language and alt text for every element screenshot, so it is accessible itself. It needs no Playwright. In code: `await renderDocx({ results, branding, client })`.

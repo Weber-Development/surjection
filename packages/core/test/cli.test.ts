@@ -389,6 +389,7 @@ describe("config schema", () => {
         "screenshots",
         "storageState",
         "colorScheme",
+        "compareWith",
         "reducedMotion",
         "states",
       ].sort(),
@@ -405,5 +406,58 @@ describe("config schema", () => {
       (s: { required: string[] }) => s.required[0],
     );
     expect(steps.sort()).toEqual(["click", "fill", "hover", "press", "wait", "waitFor"]);
+  });
+});
+
+describe("compare with an earlier run", () => {
+  it("keeps before and after screenshots of what was fixed", async () => {
+    const work = mkdtempSync(join(tmpdir(), "surjection-compare-"));
+    const file = join(work, "page.html");
+    const html = (img: string) =>
+      `<!doctype html><html lang="en"><head><title>P</title></head><body><main><h1>P</h1>${img}</main></body></html>`;
+    const gif = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
+    writeFileSync(file, html(`<img id="logo" src="${gif}" width="80" height="40">`));
+    const url = pathToFileURL(file).toString();
+    const shots = join(work, "shots");
+    const first = join(work, "run1.json");
+    await runCheck(
+      {
+        urls: [url],
+        baseline: join(work, "none.json"),
+        screenshots: shots,
+        outJson: first,
+        log: silent,
+      },
+      browser,
+    );
+    writeFileSync(file, html(`<img id="logo" src="${gif}" width="80" height="40" alt="Logo">`));
+    const second = join(work, "run2.json");
+    await runCheck(
+      {
+        urls: [url],
+        baseline: join(work, "none.json"),
+        screenshots: shots,
+        compareWith: first,
+        outJson: second,
+        log: silent,
+      },
+      browser,
+    );
+    const page = (JSON.parse(readFileSync(second, "utf8")) as ResultsFile).pages[0];
+    const fixed = page?.fixed ?? [];
+    expect(fixed.map((f) => f.rule)).toContain("image-alt");
+    const item = fixed.find((f) => f.rule === "image-alt");
+    expect(item?.before && existsSync(item.before)).toBe(true);
+    expect(item?.after && existsSync(item.after)).toBe(true);
+    expect(item?.before).not.toBe(item?.after);
+  });
+
+  it("fails clearly when the earlier results are missing", async () => {
+    await expect(
+      runCheck(
+        { urls: [fixture("good.html")], compareWith: join(dir, "nope.json"), log: silent },
+        browser,
+      ),
+    ).rejects.toThrow("not found");
   });
 });
