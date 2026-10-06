@@ -1,5 +1,11 @@
 # @sweberdev/surjection
 
+## 0.5.0
+
+### Minor Changes
+
+- 4d52f0a: New: `--layout` (and `checkLayout()`, `layout: true` in `expectAccessible`) tests reflow at 320 CSS pixels (WCAG 1.4.10) and text spacing (WCAG 1.4.12), two criteria axe-core cannot decide.
+
 ## 0.4.0
 
 ### Minor Changes
