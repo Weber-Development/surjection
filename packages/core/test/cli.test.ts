@@ -148,3 +148,45 @@ describe("runInit", () => {
     expect(runInit({ cwd })).toHaveLength(0);
   });
 });
+
+describe("keyboard check", () => {
+  it("finds focus traps and missing focus indicators", async () => {
+    const outcome = await runCheck(
+      {
+        urls: [fixture("keyboard.html")],
+        baseline: join(dir, "none.json"),
+        keyboard: true,
+        log: silent,
+      },
+      browser,
+    );
+    const findings = outcome.pages[0]?.findings ?? [];
+    const trap = findings.find((f) => f.rule === "surjection-focus-trap");
+    expect(trap?.nodes.map((n) => n.target)).toEqual(["#first", "#last"]);
+    expect(trap?.criteria[0]?.id).toBe("2.1.2");
+    const focus = findings.find((f) => f.rule === "surjection-focus-visible");
+    expect(focus?.nodes.map((n) => n.target)).toEqual(["#plain"]);
+  });
+
+  it("passes a page without traps", async () => {
+    const outcome = await runCheck(
+      {
+        urls: [fixture("good.html")],
+        baseline: join(dir, "none.json"),
+        keyboard: true,
+        log: silent,
+      },
+      browser,
+    );
+    expect(outcome.pages[0]?.findings.filter((f) => f.rule.startsWith("surjection-"))).toEqual([]);
+  });
+
+  it("rejects a missing storage state", async () => {
+    await expect(
+      runCheck(
+        { urls: [fixture("good.html")], storageState: join(dir, "missing.json"), log: silent },
+        browser,
+      ),
+    ).rejects.toThrow("not found");
+  });
+});

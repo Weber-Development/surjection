@@ -2,12 +2,16 @@
   "sections": [
     {
       "label": "Start",
-      "items": ["introduction", "getting-started"]
+      "items": [
+        "introduction",
+        "getting-started"
+      ]
     },
     {
       "label": "Guides",
       "items": [
         "guides/cli",
+        "guides/keyboard",
         "guides/github-actions",
         "guides/playwright",
         "guides/vitest",
@@ -18,15 +22,25 @@
     },
     {
       "label": "Reference",
-      "items": ["reference/config", "reference/api"]
+      "items": [
+        "reference/config",
+        "reference/api"
+      ]
     },
     {
       "label": "Surjection Pro",
-      "items": ["pro/overview", "pro/report", "pro/history", "pro/checklist"]
+      "items": [
+        "pro/overview",
+        "pro/report",
+        "pro/history",
+        "pro/checklist"
+      ]
     },
     {
       "label": "Legal",
-      "items": ["legal"]
+      "items": [
+        "legal"
+      ]
     }
   ]
 }

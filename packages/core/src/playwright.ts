@@ -2,6 +2,7 @@ import type { Page } from "@playwright/test";
 import axe from "axe-core";
 import { type AssertOptions, failingResult, failureMessage } from "./assert";
 import { axeLocale } from "./axe-locale";
+import { checkKeyboard } from "./keyboard";
 import { toPageResult } from "./normalize";
 import { axeRunOptions } from "./run";
 import type { CheckOptions, PageResult } from "./types";
@@ -11,7 +12,11 @@ export interface PageCheckOptions extends CheckOptions {
   include?: string[];
   /** Skip these selectors, e.g. third-party widgets you do not control. */
   exclude?: string[];
+  /** Also press Tab through the page to find focus traps and missing focus indicators. */
+  keyboard?: boolean;
 }
+
+export { checkKeyboard, type KeyboardCheckOptions } from "./keyboard";
 
 /** Runs axe-core in the page's main frame and returns normalized results. */
 export async function checkPage(page: Page, options: PageCheckOptions = {}): Promise<PageResult> {
@@ -30,7 +35,16 @@ export async function checkPage(page: Page, options: PageCheckOptions = {}): Pro
     },
     { runOptions: axeRunOptions(options), locale: axeLocale(options.locale), context },
   );
-  return toPageResult(results, await page.title());
+  const result = toPageResult(results, await page.title());
+  if (options.keyboard) {
+    result.findings.push(
+      ...(await checkKeyboard(page, {
+        ...(options.exclude && { exclude: options.exclude }),
+        ...(options.locale && { locale: options.locale }),
+      })),
+    );
+  }
+  return result;
 }
 
 /**

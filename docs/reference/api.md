@@ -23,7 +23,8 @@ Works in the browser, jsdom and Node.
 | Export | Purpose |
 |---|---|
 | `checkPage(page, options?)` | Check a Playwright page |
-| `expectAccessible(page, options?)` | Check and throw when issues remain |
+| `expectAccessible(page, options?)` | Check and throw when issues remain. `keyboard: true` adds the keyboard check |
+| `checkKeyboard(page, options?)` | Press Tab through the page; returns findings for focus traps and missing focus indicators |
 
 ## `@sweberdev/surjection/vitest`
 

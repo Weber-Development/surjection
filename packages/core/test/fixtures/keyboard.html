@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Keyboard</title>
+<style>
+  .plain:focus { outline: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Keyboard</h1>
+  <a href="#a" id="ok">Visible focus</a>
+  <a href="#b" id="plain" class="plain">No focus style</a>
+  <div id="dialog">
+    <button id="first">First</button>
+    <button id="last">Last</button>
+  </div>
+  <a href="#c" id="after">Never reached</a>
+</main>
+<script>
+  document.getElementById("last").addEventListener("keydown", (e) => {
+    if (e.key === "Tab" && !e.shiftKey) { e.preventDefault(); document.getElementById("first").focus(); }
+  });
+</script>
+</body>
+</html>

@@ -72,7 +72,13 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
   const active = (browser ?? ownBrowser) as Browser;
   const pages: PageResult[] = [];
   try {
-    const context = await active.newContext({ viewport, isMobile: run.viewport === "mobile" });
+    if (run.storageState && !existsSync(run.storageState))
+      throw new Error(`Storage state ${run.storageState} not found.`);
+    const context = await active.newContext({
+      viewport,
+      isMobile: run.viewport === "mobile",
+      ...(run.storageState && { storageState: run.storageState }),
+    });
     for (const url of urls) {
       const page = await context.newPage();
       try {
@@ -83,6 +89,7 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
           ...(run.disableRules && { disableRules: run.disableRules }),
           ...(run.exclude && { exclude: run.exclude }),
           ...(run.locale && { locale: run.locale }),
+          ...(run.keyboard && { keyboard: true }),
         });
         pages.push(result);
         const count = result.findings.reduce((n, f) => n + f.nodes.length, 0);

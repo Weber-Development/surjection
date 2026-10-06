@@ -26,6 +26,8 @@ check options:
   --out-json <file>      Write all results as JSON
   --out-junit <file>     Write a JUnit XML report (GitLab, Azure DevOps, Jenkins)
   --viewport <size>      desktop (default) | mobile | <width>x<height>
+  --keyboard             Also Tab through each page: focus traps, missing focus indicators
+  --storage-state <file> Playwright storage state, to check pages behind a login
   --project <name>       Project name for reports
 
 Exit code 1 when issues remain after baseline and --fail-on.
@@ -96,6 +98,8 @@ export async function main(argv: string[]): Promise<number> {
       "out-json": { type: "string" },
       "out-junit": { type: "string" },
       viewport: { type: "string" },
+      keyboard: { type: "boolean" },
+      "storage-state": { type: "string" },
       project: { type: "string" },
     },
   });
@@ -118,6 +122,8 @@ export async function main(argv: string[]): Promise<number> {
     ...(values["out-json"] && { outJson: values["out-json"] }),
     ...(values["out-junit"] && { outJUnit: values["out-junit"] }),
     ...(values.viewport && { viewport: values.viewport }),
+    ...(values.keyboard && { keyboard: true }),
+    ...(values["storage-state"] && { storageState: values["storage-state"] }),
   });
   if (outcome.failed) {
     const issues = outcome.failing.reduce(

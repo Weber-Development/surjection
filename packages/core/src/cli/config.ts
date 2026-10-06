@@ -23,6 +23,10 @@ export interface SurjectionConfig {
   project?: string;
   /** Window size: "desktop" (1280x800, default), "mobile" (390x844) or "<width>x<height>". */
   viewport?: string;
+  /** Also press Tab through every page to find focus traps and missing focus indicators. */
+  keyboard?: boolean;
+  /** Playwright storage state (cookies, local storage) to check pages behind a login. */
+  storageState?: string;
 }
 
 export const VIEWPORTS = {
