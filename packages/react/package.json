@@ -1,6 +1,6 @@
 {
   "name": "@sweberdev/surjection-react",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Small, unstyled accessible building blocks for React: skip link, visually hidden text, live announcements, reduced motion.",
   "license": "MIT",
   "author": "Seya Weber (https://github.com/sxwxbxr)",

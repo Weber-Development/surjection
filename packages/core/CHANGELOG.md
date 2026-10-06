@@ -1,5 +1,11 @@
 # @sweberdev/surjection
 
+## 0.8.0
+
+### Minor Changes
+
+- 8b79f04: New: `--compare-with <results.json>` lists issues of the earlier run that are gone as `fixed` in the results and, with `--screenshots`, takes before and after screenshots of those elements.
+
 ## 0.7.0
 
 ### Minor Changes
