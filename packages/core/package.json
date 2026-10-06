@@ -1,6 +1,6 @@
 {
   "name": "@sweberdev/surjection",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Accessibility checks for CI and development, agency-ready reports and accessibility statements (DE, DE-CH, FR, IT, EN). Built on axe-core. No overlay.",
   "license": "MIT",
   "author": "Seya Weber (https://github.com/sxwxbxr)",
