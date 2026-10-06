@@ -3,6 +3,7 @@ import axe from "axe-core";
 import { type AssertOptions, failingResult, failureMessage } from "./assert";
 import { axeLocale } from "./axe-locale";
 import { checkKeyboard } from "./keyboard";
+import { checkLayout } from "./layout";
 import { toPageResult } from "./normalize";
 import { axeRunOptions } from "./run";
 import type { CheckOptions, PageResult } from "./types";
@@ -14,9 +15,12 @@ export interface PageCheckOptions extends CheckOptions {
   exclude?: string[];
   /** Also press Tab through the page to find focus traps and missing focus indicators. */
   keyboard?: boolean;
+  /** Also check reflow at 320 px (1.4.10) and text spacing (1.4.12). Changes the viewport temporarily. */
+  layout?: boolean;
 }
 
 export { checkKeyboard, type KeyboardCheckOptions } from "./keyboard";
+export { checkLayout, type LayoutCheckOptions } from "./layout";
 export { captureEvidence, type ScreenshotOptions } from "./screenshots";
 
 /** Runs axe-core in the page's main frame and returns normalized results. */
@@ -40,6 +44,14 @@ export async function checkPage(page: Page, options: PageCheckOptions = {}): Pro
   if (options.keyboard) {
     result.findings.push(
       ...(await checkKeyboard(page, {
+        ...(options.exclude && { exclude: options.exclude }),
+        ...(options.locale && { locale: options.locale }),
+      })),
+    );
+  }
+  if (options.layout) {
+    result.findings.push(
+      ...(await checkLayout(page, {
         ...(options.exclude && { exclude: options.exclude }),
         ...(options.locale && { locale: options.locale }),
       })),

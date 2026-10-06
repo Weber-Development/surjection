@@ -37,6 +37,7 @@ The CLI reads `surjection.config.json` from the working directory, or the file p
 | `baseline` | string | `surjection-baseline.json` |
 | `viewport` | `desktop` \| `mobile` \| `<width>x<height>` | `desktop` |
 | `screenshots` | string | |
+| `layout` | boolean | `false` |
 | `keyboard` | boolean | `false` |
 | `storageState` | string | |
 | `project` | string | |

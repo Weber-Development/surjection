@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Layout</title>
+<style>
+  body { margin: 0; font: 16px/1.2 sans-serif; }
+  #wide { width: 600px; background: #eef; }
+  .scroller { overflow-x: auto; width: 100%; }
+  .scroller table { width: 700px; }
+  #clip { width: 220px; height: 22px; overflow: hidden; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Layout</h1>
+  <div id="wide">A block with a fixed width.</div>
+  <div class="scroller"><table><tr><td>Scrolls inside its own box</td></tr></table></div>
+  <div id="clip">Opening hours today</div>
+</main>
+</body>
+</html>

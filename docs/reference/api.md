@@ -24,6 +24,7 @@ Works in the browser, jsdom and Node.
 |---|---|
 | `checkPage(page, options?)` | Check a Playwright page |
 | `expectAccessible(page, options?)` | Check and throw when issues remain. `keyboard: true` adds the keyboard check |
+| `checkLayout(page, options?)` | Check reflow at 320 px and text spacing; returns findings. `layout: true` in `expectAccessible` adds it |
 | `checkKeyboard(page, options?)` | Press Tab through the page; returns findings for focus traps and missing focus indicators |
 
 ## `@sweberdev/surjection/vitest`

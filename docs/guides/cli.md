@@ -41,6 +41,7 @@ Sitemap indexes are followed one level deep. `--max-pages` (default 50) keeps la
 | `--out-junit <file>` | | JUnit XML: one test suite per page, one failed test per rule. GitLab, Azure DevOps and Jenkins show it as test results |
 | `--viewport <size>` | `desktop` | `desktop` (1280×800), `mobile` (390×844, touch) or `<width>x<height>`, e.g. to catch issues in the mobile menu |
 | `--screenshots <dir>` | | Screenshot every affected element, up to 5 per finding and 40 per page. [Surjection Pro](../pro/report.md) reports embed them as evidence |
+| `--layout` | | Also check reflow at 320 px and text spacing, see [Layout checks](layout.md) |
 | `--keyboard` | | Also press Tab through each page to find focus traps and missing focus indicators, see [Keyboard and login](keyboard.md) |
 | `--storage-state <file>` | | Playwright storage state, to check pages behind a login |
 | `--project <name>` | | Project name in reports |

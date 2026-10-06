@@ -9,6 +9,7 @@
       "items": [
         "guides/cli",
         "guides/keyboard",
+        "guides/layout",
         "guides/github-actions",
         "guides/playwright",
         "guides/vitest",

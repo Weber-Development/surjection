@@ -91,6 +91,7 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
           ...(run.exclude && { exclude: run.exclude }),
           ...(run.locale && { locale: run.locale }),
           ...(run.keyboard && { keyboard: true }),
+          ...(run.layout && { layout: true }),
         });
         if (run.screenshots)
           await captureEvidence(page, result, { dir: run.screenshots, pageIndex: pages.length });

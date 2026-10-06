@@ -215,3 +215,37 @@ describe("screenshots", () => {
     }
   });
 });
+
+describe("layout check", () => {
+  it("finds reflow and text spacing problems and restores the viewport", async () => {
+    const outcome = await runCheck(
+      {
+        urls: [fixture("layout.html")],
+        baseline: join(dir, "none.json"),
+        layout: true,
+        log: silent,
+      },
+      browser,
+    );
+    const findings = outcome.pages[0]?.findings ?? [];
+    const reflow = findings.find((f) => f.rule === "surjection-reflow");
+    expect(reflow?.nodes.map((n) => n.target)).toEqual(["#wide"]);
+    expect(reflow?.criteria[0]?.id).toBe("1.4.10");
+    const spacing = findings.find((f) => f.rule === "surjection-text-spacing");
+    expect(spacing?.nodes.map((n) => n.target)).toEqual(["#clip"]);
+    expect(spacing?.criteria[0]?.id).toBe("1.4.12");
+  });
+
+  it("passes a fluid page", async () => {
+    const outcome = await runCheck(
+      {
+        urls: [fixture("layout-ok.html")],
+        baseline: join(dir, "none.json"),
+        layout: true,
+        log: silent,
+      },
+      browser,
+    );
+    expect(outcome.pages[0]?.findings.filter((f) => f.rule.startsWith("surjection-"))).toEqual([]);
+  });
+});
