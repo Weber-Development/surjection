@@ -37,7 +37,7 @@ npx surjection-report --results a11y.json --locale de --out massnahmen.csv
 | `--history-dir` | History folder from `surjection-history`, for trend and comparison |
 | `--locale` | `de`, `de-CH`, `fr`, `it` or `en` (default) |
 | `--standard` | Text for the target standard (default: WCAG 2.2 AA) |
-| `--out` | `.html`, `.pdf` or `.csv` |
+| `--out` | `.html`, `.pdf`, `.docx` or `.csv` |
 
 ## Branding
 
@@ -64,6 +64,10 @@ npx surjection-report --results a11y.json --brand brand.json --locale de --out r
 ```
 
 The paths in `a11y.json` are resolved relative to the results file or the working directory. Elements inside iframes or shadow DOM and invisible elements get no picture.
+
+## Word (DOCX)
+
+With `--out report.docx` you get the same content as an editable Word document, for clients who want to adjust texts or forward the report inside their organisation. The file uses real headings, table header rows, the document language and alt text for every element screenshot, so it is accessible itself. It needs no Playwright. In code: `await renderDocx({ results, branding, client })`.
 
 ## Fix list (CSV)
 
