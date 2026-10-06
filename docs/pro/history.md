@@ -80,6 +80,18 @@ jobs:
       - run: surjection-history regressions --fail-on serious --out-md monitoring.md
 ```
 
+### Notify by chat or mail
+
+```sh
+npx surjection-history regressions --fail-on serious \
+  --webhook "$MONITORING_WEBHOOK" \
+  --mail-to team@agency.ch --mail-from monitoring@agency.ch
+```
+
+`--webhook` posts a short message with the new issues as JSON (`{"text": …, "content": …}`), which Slack, Mattermost, Discord and Microsoft Teams workflows accept. `--mail-to` sends the same message by SMTP; set `SURJECTION_SMTP_URL` (for example `smtps://user:password@mail.agency.ch:465`). Both are only used when something got worse at or above `--fail-on`, so a quiet week sends nothing. Webhook URL and SMTP URL are secrets: keep them in your CI secrets, never in the repository. The webhook must use https. The exit code stays 1 when issues got worse, so the job still fails.
+
+In code: `notificationText(reports)`, `sendWebhook(url, text)` and `sendMail({ … })`.
+
 ## API
 
 ```ts
