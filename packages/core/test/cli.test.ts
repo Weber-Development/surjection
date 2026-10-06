@@ -190,3 +190,28 @@ describe("keyboard check", () => {
     ).rejects.toThrow("not found");
   });
 });
+
+describe("screenshots", () => {
+  it("stores a screenshot per affected element and references it in the results", async () => {
+    const shots = join(dir, "shots");
+    const outJson = join(dir, "shots.json");
+    await runCheck(
+      {
+        urls: [fixture("bad.html")],
+        baseline: join(dir, "none.json"),
+        screenshots: shots,
+        outJson,
+        log: silent,
+      },
+      browser,
+    );
+    const json = JSON.parse(readFileSync(outJson, "utf8")) as ResultsFile;
+    const files = json.pages[0]?.findings.flatMap((f) => f.nodes.map((n) => n.screenshot)) ?? [];
+    const taken = files.filter((f): f is string => Boolean(f));
+    expect(taken.length).toBeGreaterThan(0);
+    for (const file of taken) {
+      expect(existsSync(file)).toBe(true);
+      expect(readFileSync(file).subarray(1, 4).toString()).toBe("PNG");
+    }
+  });
+});

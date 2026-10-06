@@ -54,6 +54,17 @@ npx surjection-report --results a11y.json --locale de --out massnahmen.csv
 
 The logo can be a URL or a `data:` URL. A light brand colour is darkened automatically until text on it reaches a contrast of 4.5:1.
 
+## Screenshots as evidence
+
+Run the check with `--screenshots` and the report shows a picture of every affected element next to its selector, so the client sees the problem instead of reading about it. The report stays one self-contained file.
+
+```sh
+npx surjection check --config surjection.config.json --out-json a11y.json --screenshots a11y-shots
+npx surjection-report --results a11y.json --brand brand.json --locale de --out report.pdf
+```
+
+The paths in `a11y.json` are resolved relative to the results file or the working directory. Elements inside iframes or shadow DOM and invisible elements get no picture.
+
 ## Fix list (CSV)
 
 With `--out massnahmen.csv` you get a fix list instead of a report: one row per affected element with page, rule, impact, WCAG and EN 301 549 criteria, selector and what to do, plus empty Status and Note columns for the team that fixes it. The file uses `;` and a BOM, so Excel opens it directly with umlauts intact. Only `--results` and `--locale` are needed. In code: `toFixListCsv(results, { locale: "de-CH" })`.

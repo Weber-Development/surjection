@@ -26,6 +26,7 @@ check options:
   --out-json <file>      Write all results as JSON
   --out-junit <file>     Write a JUnit XML report (GitLab, Azure DevOps, Jenkins)
   --viewport <size>      desktop (default) | mobile | <width>x<height>
+  --screenshots <dir>    Screenshot every affected element (evidence for Pro reports)
   --keyboard             Also Tab through each page: focus traps, missing focus indicators
   --storage-state <file> Playwright storage state, to check pages behind a login
   --project <name>       Project name for reports
@@ -99,6 +100,7 @@ export async function main(argv: string[]): Promise<number> {
       "out-junit": { type: "string" },
       viewport: { type: "string" },
       keyboard: { type: "boolean" },
+      screenshots: { type: "string" },
       "storage-state": { type: "string" },
       project: { type: "string" },
     },
@@ -123,6 +125,7 @@ export async function main(argv: string[]): Promise<number> {
     ...(values["out-junit"] && { outJUnit: values["out-junit"] }),
     ...(values.viewport && { viewport: values.viewport }),
     ...(values.keyboard && { keyboard: true }),
+    ...(values.screenshots && { screenshots: values.screenshots }),
     ...(values["storage-state"] && { storageState: values["storage-state"] }),
   });
   if (outcome.failed) {

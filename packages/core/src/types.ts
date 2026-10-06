@@ -19,6 +19,8 @@ export interface FindingNode {
   html: string;
   /** Short explanation of what to fix on this element. */
   summary: string;
+  /** Screenshot of the element, written by `surjection check --screenshots <dir>`. */
+  screenshot?: string;
 }
 
 /** One violated rule on one page, normalized from an axe-core result. */

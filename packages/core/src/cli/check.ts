@@ -5,6 +5,7 @@ import { applyBaseline, type Baseline, createBaseline } from "../baseline";
 import { checkPage } from "../playwright";
 import { toJUnit } from "../report/junit";
 import { toMarkdown } from "../report/markdown";
+import { captureEvidence } from "../screenshots";
 import type { PageResult, ResultsFile } from "../types";
 import { parseViewport, resolveUrls, type SurjectionConfig } from "./config";
 import { loadSitemap } from "./sitemap";
@@ -91,6 +92,8 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
           ...(run.locale && { locale: run.locale }),
           ...(run.keyboard && { keyboard: true }),
         });
+        if (run.screenshots)
+          await captureEvidence(page, result, { dir: run.screenshots, pageIndex: pages.length });
         pages.push(result);
         const count = result.findings.reduce((n, f) => n + f.nodes.length, 0);
         log(`${count === 0 ? "✓" : "✗"} ${url} (${count} issue${count === 1 ? "" : "s"})`);

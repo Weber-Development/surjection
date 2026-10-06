@@ -25,6 +25,8 @@ export interface SurjectionConfig {
   viewport?: string;
   /** Also press Tab through every page to find focus traps and missing focus indicators. */
   keyboard?: boolean;
+  /** Folder for screenshots of the affected elements, as evidence for reports. */
+  screenshots?: string;
   /** Playwright storage state (cookies, local storage) to check pages behind a login. */
   storageState?: string;
 }

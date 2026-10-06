@@ -17,6 +17,7 @@ export interface PageCheckOptions extends CheckOptions {
 }
 
 export { checkKeyboard, type KeyboardCheckOptions } from "./keyboard";
+export { captureEvidence, type ScreenshotOptions } from "./screenshots";
 
 /** Runs axe-core in the page's main frame and returns normalized results. */
 export async function checkPage(page: Page, options: PageCheckOptions = {}): Promise<PageResult> {

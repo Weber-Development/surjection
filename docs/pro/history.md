@@ -41,6 +41,45 @@ npx surjection-history badge --out-dir badges   # one <project-slug>.svg per pro
 
 Put it in a README, the client portal or a status page. Publish the badges after each recorded run, for example as part of the same CI job. In code: `renderBadge(projectStatus(slug, runs), "de")`.
 
+## regressions
+
+Compares the latest run of a project with the previous one and lists what got worse. The exit code is `1` when new issues at or above `--fail-on` (default `minor`) appeared, so a scheduled job can alert you.
+
+```sh
+npx surjection-history regressions --fail-on serious --locale de --out-md monitoring.md
+```
+
+Without `--project` all projects are checked. In GitHub Actions the Markdown is added to the job summary. This workflow checks a client site every night, records the run and fails (GitHub then sends the failure mail to the repository watchers) when a new serious issue appears:
+
+```yaml title=".github/workflows/monitoring.yml"
+name: Accessibility monitoring
+on:
+  schedule: [{ cron: "17 3 * * *" }]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: "@weber-development"
+      - run: npm i -g @sweberdev/surjection @weber-development/surjection-history @playwright/test
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.SURJECTION_PRO_TOKEN }}
+      - run: npx playwright install --with-deps chromium
+      - run: surjection check --config surjection.config.json --out-json a11y.json --baseline none.json || true
+      - run: surjection-history record --results a11y.json
+      - run: |
+          git config user.name "a11y-monitor" && git config user.email "monitor@users.noreply.github.com"
+          git add .surjection-history && git commit -m "Record accessibility run" && git push
+      - run: surjection-history regressions --fail-on serious --out-md monitoring.md
+```
+
 ## API
 
 ```ts
