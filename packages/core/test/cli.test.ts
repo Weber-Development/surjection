@@ -321,3 +321,89 @@ describe("focus order", () => {
     expect(order?.criteria[0]?.id).toBe("2.4.3");
   });
 });
+
+describe("SARIF output", () => {
+  it("writes one result per element with rule metadata", async () => {
+    const out = join(dir, "out.sarif");
+    await runCheck(
+      { urls: [fixture("bad.html")], baseline: join(dir, "none.json"), outSarif: out, log: silent },
+      browser,
+    );
+    const sarif = JSON.parse(readFileSync(out, "utf8"));
+    expect(sarif.version).toBe("2.1.0");
+    const run = sarif.runs[0];
+    expect(run.tool.driver.name).toBe("Surjection");
+    expect(run.results.length).toBeGreaterThan(0);
+    const ruleIds = run.tool.driver.rules.map((r: { id: string }) => r.id);
+    for (const result of run.results) {
+      expect(ruleIds).toContain(result.ruleId);
+      expect(["error", "warning", "note"]).toContain(result.level);
+      expect(result.locations[0].physicalLocation.artifactLocation.uri).toContain("bad.html");
+    }
+  });
+});
+
+describe("colour scheme", () => {
+  it("finds a contrast problem that exists only in dark mode", async () => {
+    const run = (colorScheme?: "dark") =>
+      runCheck(
+        {
+          urls: [fixture("scheme.html")],
+          baseline: join(dir, "none.json"),
+          ...(colorScheme && { colorScheme }),
+          log: silent,
+        },
+        browser,
+      );
+    expect((await run()).failed).toBe(false);
+    const dark = await run("dark");
+    expect(dark.failing[0]?.findings.map((f) => f.rule)).toContain("color-contrast");
+  });
+});
+
+describe("config schema", () => {
+  const schema = JSON.parse(
+    readFileSync(join(__dirname, "..", "surjection.config.schema.json"), "utf8"),
+  );
+
+  it("describes every field of the config and of the init file", () => {
+    const keys = Object.keys(schema.properties).sort();
+    expect(keys).toEqual(
+      [
+        "$schema",
+        "urls",
+        "baseUrl",
+        "sitemap",
+        "maxPages",
+        "standard",
+        "bestPractice",
+        "disableRules",
+        "exclude",
+        "failOn",
+        "locale",
+        "baseline",
+        "project",
+        "viewport",
+        "keyboard",
+        "layout",
+        "screenshots",
+        "storageState",
+        "colorScheme",
+        "reducedMotion",
+        "states",
+      ].sort(),
+    );
+    const cwd = mkdtempSync(join(tmpdir(), "surjection-schema-"));
+    runInit({ cwd, project: "X", sitemap: true });
+    const config = JSON.parse(readFileSync(join(cwd, "surjection.config.json"), "utf8"));
+    for (const key of Object.keys(config)) expect(keys).toContain(key);
+    expect(config.$schema).toContain("surjection.config.schema.json");
+  });
+
+  it("knows the same steps as the runner", () => {
+    const steps = schema.properties.states.items.properties.steps.items.oneOf.map(
+      (s: { required: string[] }) => s.required[0],
+    );
+    expect(steps.sort()).toEqual(["click", "fill", "hover", "press", "wait", "waitFor"]);
+  });
+});

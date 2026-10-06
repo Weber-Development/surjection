@@ -13,6 +13,9 @@ export interface InitOptions {
   cwd?: string;
 }
 
+export const CONFIG_SCHEMA_URL =
+  "https://unpkg.com/@sweberdev/surjection/surjection.config.schema.json";
+
 export const WORKFLOW_FILE = ".github/workflows/accessibility.yml";
 
 const WORKFLOW = `name: Accessibility
@@ -53,7 +56,12 @@ export function runInit(options: InitOptions = {}): string[] {
     failOn: "serious",
     locale: "en",
   };
-  const files: [string, string][] = [[DEFAULT_CONFIG_FILE, `${JSON.stringify(config, null, 2)}\n`]];
+  const files: [string, string][] = [
+    [
+      DEFAULT_CONFIG_FILE,
+      `${JSON.stringify({ $schema: CONFIG_SCHEMA_URL, ...config }, null, 2)}\n`,
+    ],
+  ];
   if (options.workflow !== false) files.push([WORKFLOW_FILE, WORKFLOW]);
 
   const written: string[] = [];

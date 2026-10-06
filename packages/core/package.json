@@ -64,6 +64,7 @@
   "files": [
     "dist",
     "src",
+    "surjection.config.schema.json",
     "README.md",
     "LICENSE"
   ],

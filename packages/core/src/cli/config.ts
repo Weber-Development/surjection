@@ -47,6 +47,10 @@ export interface SurjectionConfig {
   viewport?: string;
   /** Also press Tab through every page to find focus traps and missing focus indicators. */
   keyboard?: boolean;
+  /** Emulate the colour scheme of the visitor, e.g. "dark" to check the dark theme. */
+  colorScheme?: "light" | "dark";
+  /** Emulate "reduce motion", to check pages that react to it. */
+  reducedMotion?: boolean;
   /** Pages in other states: run the steps, then check like any other page. */
   states?: StateConfig[];
   /** Also check reflow at 320 px and text spacing. */

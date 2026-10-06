@@ -25,6 +25,9 @@ check options:
   --out-md <file>        Write the Markdown report
   --out-json <file>      Write all results as JSON
   --out-junit <file>     Write a JUnit XML report (GitLab, Azure DevOps, Jenkins)
+  --out-sarif <file>     Write SARIF 2.1.0 for tools that read static analysis results
+  --color-scheme <s>     light | dark: emulate the visitor's colour scheme
+  --reduced-motion       Emulate "reduce motion"
   --viewport <size>      desktop (default) | mobile | <width>x<height>
   --screenshots <dir>    Screenshot every affected element (evidence for Pro reports)
   --layout               Also check reflow at 320 px and text spacing
@@ -34,6 +37,12 @@ check options:
 
 Exit code 1 when issues remain after baseline and --fail-on.
 Automated tests find only part of all barriers. A passing run is no proof of conformance.`;
+
+function parseColorScheme(value: string): "light" | "dark" {
+  if (value !== "light" && value !== "dark")
+    throw new Error(`Invalid --color-scheme "${value}". Use light or dark.`);
+  return value;
+}
 
 export async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
@@ -99,6 +108,9 @@ export async function main(argv: string[]): Promise<number> {
       "out-md": { type: "string" },
       "out-json": { type: "string" },
       "out-junit": { type: "string" },
+      "out-sarif": { type: "string" },
+      "color-scheme": { type: "string" },
+      "reduced-motion": { type: "boolean" },
       viewport: { type: "string" },
       keyboard: { type: "boolean" },
       layout: { type: "boolean" },
@@ -125,6 +137,9 @@ export async function main(argv: string[]): Promise<number> {
     ...(values["out-md"] && { outMarkdown: values["out-md"] }),
     ...(values["out-json"] && { outJson: values["out-json"] }),
     ...(values["out-junit"] && { outJUnit: values["out-junit"] }),
+    ...(values["out-sarif"] && { outSarif: values["out-sarif"] }),
+    ...(values["color-scheme"] && { colorScheme: parseColorScheme(values["color-scheme"]) }),
+    ...(values["reduced-motion"] && { reducedMotion: true }),
     ...(values.viewport && { viewport: values.viewport }),
     ...(values.keyboard && { keyboard: true }),
     ...(values.layout && { layout: true }),

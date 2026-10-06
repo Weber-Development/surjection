@@ -5,6 +5,7 @@ import { applyBaseline, type Baseline, createBaseline } from "../baseline";
 import { checkPage } from "../playwright";
 import { toJUnit } from "../report/junit";
 import { toMarkdown } from "../report/markdown";
+import { toSarif } from "../report/sarif";
 import { captureEvidence } from "../screenshots";
 import type { PageResult, ResultsFile } from "../types";
 import { parseViewport, resolveUrls, type StateConfig, type SurjectionConfig } from "./config";
@@ -19,6 +20,8 @@ export interface CheckRun extends SurjectionConfig {
   outJson?: string;
   /** Write a JUnit XML report here, for CI test report views. */
   outJUnit?: string;
+  /** Write SARIF 2.1.0 here, for tools that read static analysis results. */
+  outSarif?: string;
   log?: (line: string) => void;
 }
 
@@ -79,6 +82,8 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
     const context = await active.newContext({
       viewport,
       isMobile: run.viewport === "mobile",
+      ...(run.colorScheme && { colorScheme: run.colorScheme }),
+      ...(run.reducedMotion && { reducedMotion: "reduce" as const }),
       ...(run.storageState && { storageState: run.storageState }),
     });
     const targets = [
@@ -139,6 +144,7 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
   });
   if (run.outMarkdown) writeFileSync(run.outMarkdown, markdown);
   if (run.outJUnit) writeFileSync(run.outJUnit, toJUnit(reported));
+  if (run.outSarif) writeFileSync(run.outSarif, toSarif(reported));
   if (run.outJson) {
     const file: ResultsFile = {
       version: 1,

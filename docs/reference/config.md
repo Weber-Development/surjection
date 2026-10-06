@@ -40,5 +40,17 @@ The CLI reads `surjection.config.json` from the working directory, or the file p
 | `layout` | boolean | `false` |
 | `keyboard` | boolean | `false` |
 | `storageState` | string | |
+| `colorScheme` | `light` \| `dark` | |
+| `reducedMotion` | boolean | `false` |
 | `states` | `{ name, url?, steps }[]` | `[]` |
 | `project` | string | |
+
+## Editor support (JSON schema)
+
+`surjection init` writes the config with a `$schema` line. Editors such as VS Code then complete field names, show the descriptions and flag typos or invalid steps while you type. For an existing file add:
+
+```json
+{ "$schema": "https://unpkg.com/@sweberdev/surjection/surjection.config.schema.json" }
+```
+
+The schema ships with the package as `surjection.config.schema.json`.

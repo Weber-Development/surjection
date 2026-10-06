@@ -39,6 +39,9 @@ Sitemap indexes are followed one level deep. `--max-pages` (default 50) keeps la
 | `--out-md <file>` | | Markdown report |
 | `--out-json <file>` | | All results as JSON, input for [Surjection Pro](../pro/overview.md) |
 | `--out-junit <file>` | | JUnit XML: one test suite per page, one failed test per rule. GitLab, Azure DevOps and Jenkins show it as test results |
+| `--out-sarif <file>` | | SARIF 2.1.0, one result per element. Viewers and tools that read SARIF can import it. GitHub code scanning accepts the upload but cannot link a URL to a line of code, so use the Markdown summary there |
+| `--color-scheme <light\|dark>` | | Emulates the visitor's colour scheme, to check the dark theme for contrast |
+| `--reduced-motion` | | Emulates "reduce motion", to check what pages show when animation is off |
 | `--viewport <size>` | `desktop` | `desktop` (1280×800), `mobile` (390×844, touch) or `<width>x<height>`, e.g. to catch issues in the mobile menu |
 | `--screenshots <dir>` | | Screenshot every affected element, up to 5 per finding and 40 per page. [Surjection Pro](../pro/report.md) reports embed them as evidence |
 | `--layout` | | Also check reflow at 320 px and text spacing, see [Layout checks](layout.md) |

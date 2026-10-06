@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://unpkg.com/@sweberdev/surjection/surjection.config.schema.json",
+  "title": "Surjection configuration",
+  "description": "surjection.config.json of @sweberdev/surjection. Every field can also be given as a CLI flag.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "urls": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Absolute URLs, or paths resolved against baseUrl."
+    },
+    "baseUrl": {
+      "type": "string",
+      "description": "Origin that relative URLs are resolved against."
+    },
+    "sitemap": { "type": "string", "description": "Sitemap URL or path whose pages are checked." },
+    "maxPages": { "type": "integer", "minimum": 1, "default": 50 },
+    "standard": { "enum": ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"], "default": "wcag22aa" },
+    "bestPractice": { "type": "boolean", "default": false },
+    "disableRules": { "type": "array", "items": { "type": "string" } },
+    "exclude": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "CSS selectors to skip on every page."
+    },
+    "failOn": { "enum": ["minor", "moderate", "serious", "critical"], "default": "minor" },
+    "locale": { "enum": ["de", "de-CH", "fr", "it", "en"], "default": "en" },
+    "baseline": { "type": "string", "default": "surjection-baseline.json" },
+    "project": { "type": "string", "description": "Project name shown in reports." },
+    "viewport": {
+      "type": "string",
+      "pattern": "^(desktop|mobile|\\d{2,5}x\\d{2,5})$",
+      "default": "desktop"
+    },
+    "keyboard": { "type": "boolean", "default": false },
+    "layout": { "type": "boolean", "default": false },
+    "screenshots": {
+      "type": "string",
+      "description": "Folder for screenshots of affected elements."
+    },
+    "storageState": {
+      "type": "string",
+      "description": "Playwright storage state for pages behind a login."
+    },
+    "colorScheme": { "enum": ["light", "dark"] },
+    "reducedMotion": { "type": "boolean", "default": false },
+    "states": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "steps"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[^\\s#]+$" },
+          "url": { "type": "string" },
+          "steps": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["click"],
+                  "properties": { "click": { "type": "string" } }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["hover"],
+                  "properties": { "hover": { "type": "string" } }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["fill"],
+                  "properties": {
+                    "fill": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "minItems": 2,
+                      "maxItems": 2
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["press"],
+                  "properties": { "press": { "type": "string" } }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["waitFor"],
+                  "properties": { "waitFor": { "type": "string" } }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["wait"],
+                  "properties": { "wait": { "type": "integer", "minimum": 0, "maximum": 10000 } }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
