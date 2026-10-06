@@ -3,7 +3,7 @@ title: Manual checklist
 description: Work through the WCAG 2.2 A/AA success criteria that automated tests cannot cover.
 ---
 
-Automated rules find only part of the barriers. `@weber-development/surjection-checklist` guides the manual part: the 55 success criteria of WCAG 2.2 level A and AA, each with a short instruction in English and German.
+Automated rules find only part of the barriers. `@weber-development/surjection-checklist` guides the manual part: the 55 success criteria of WCAG 2.2 level A and AA, each with a short instruction in English, German, Swiss German, French and Italian (`--locale en|de|de-CH|fr|it`). The editor, the Markdown list and the client report follow the language.
 
 ```sh
 npx surjection-checklist init --project "Muster AG"
