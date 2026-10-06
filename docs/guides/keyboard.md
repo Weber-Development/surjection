@@ -37,6 +37,12 @@ button:focus-visible {
 
 A change elsewhere, for example on a parent element, is not detected and leads to a false positive. Accept it in the baseline after checking it by hand.
 
+## Focus order
+
+Rule `surjection-focus-order`, WCAG 2.4.3 (A), EN 301 549 9.2.4.3, impact moderate.
+
+While pressing Tab, Surjection notes where each focused element sits. If focus jumps up by more than 200 px, for example because of positive `tabindex` values or content moved with CSS, the finding lists the affected elements (at most ten). Fixed and sticky elements such as headers are ignored. A sensible order is more than this rule can judge, so treat the finding as a pointer: remove positive `tabindex` values and keep the DOM order the same as the visual order.
+
 ## Pages behind a login
 
 Save a logged-in session once with Playwright and pass it to the check:
@@ -50,4 +56,4 @@ npx surjection check --storage-state auth.json /konto /bestellungen
 
 ## Limits
 
-The keyboard check covers traps and visible focus. Whether the focus order makes sense, whether all functions work with the keyboard and whether shortcuts can be turned off still needs a manual test, see the Pro checklist.
+The keyboard check covers traps and visible focus. Whether the focus order really makes sense, whether all functions work with the keyboard and whether shortcuts can be turned off still needs a manual test, see the Pro checklist.

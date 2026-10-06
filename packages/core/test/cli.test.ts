@@ -249,3 +249,75 @@ describe("layout check", () => {
     expect(outcome.pages[0]?.findings.filter((f) => f.rule.startsWith("surjection-"))).toEqual([]);
   });
 });
+
+describe("states", () => {
+  it("runs the steps and reports findings per state, without touching the plain page", async () => {
+    const outcome = await runCheck(
+      {
+        urls: [fixture("states.html")],
+        baseline: join(dir, "none.json"),
+        states: [{ name: "menu-open", steps: [{ click: "#menu" }, { waitFor: "#logo" }] }],
+        log: silent,
+      },
+      browser,
+    );
+    expect(outcome.pages).toHaveLength(2);
+    expect(outcome.pages[0]?.findings.some((f) => f.rule === "image-alt")).toBe(false);
+    const state = outcome.pages[1];
+    expect(state?.url.endsWith("#state:menu-open")).toBe(true);
+    expect(state?.findings.some((f) => f.rule === "image-alt")).toBe(true);
+  });
+
+  it("works with states only and names a failing step", async () => {
+    const only = await runCheck(
+      {
+        baseline: join(dir, "none.json"),
+        states: [{ name: "x", url: fixture("states.html"), steps: [{ click: "#menu" }] }],
+        log: silent,
+      },
+      browser,
+    );
+    expect(only.pages).toHaveLength(1);
+    await expect(
+      runCheck(
+        {
+          baseline: join(dir, "none.json"),
+          states: [{ name: "broken", url: fixture("states.html"), steps: [{ click: "#missing" }] }],
+          log: silent,
+        },
+        browser,
+      ),
+    ).rejects.toThrow('State "broken", step "click #missing" failed');
+  });
+
+  it("keeps states apart in the baseline", async () => {
+    const baseline = join(dir, "state-baseline.json");
+    const run = {
+      urls: [fixture("states.html")],
+      baseline,
+      states: [{ name: "menu-open", steps: [{ click: "#menu" }] }],
+      log: silent,
+    };
+    await runCheck({ ...run, updateBaseline: true }, browser);
+    const accepted = JSON.parse(readFileSync(baseline, "utf8")) as { entries: string[] };
+    expect(accepted.entries.some((e) => e.includes("#state:menu-open|image-alt"))).toBe(true);
+    expect((await runCheck(run, browser)).failed).toBe(false);
+  });
+});
+
+describe("focus order", () => {
+  it("finds a jump up the page caused by a positive tabindex", async () => {
+    const outcome = await runCheck(
+      {
+        urls: [fixture("order.html")],
+        baseline: join(dir, "none.json"),
+        keyboard: true,
+        log: silent,
+      },
+      browser,
+    );
+    const order = outcome.pages[0]?.findings.find((f) => f.rule === "surjection-focus-order");
+    expect(order?.nodes.map((n) => n.target)).toEqual(["#first"]);
+    expect(order?.criteria[0]?.id).toBe("2.4.3");
+  });
+});

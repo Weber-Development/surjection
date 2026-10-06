@@ -2,6 +2,28 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Impact, Locale } from "../types";
 
+/**
+ * One action before a state is checked. Exactly one key per step:
+ * `{ "click": "#menu" }`, `{ "hover": "#nav" }`, `{ "fill": ["#email", "x"] }`,
+ * `{ "press": "Escape" }`, `{ "waitFor": "#dialog" }` or `{ "wait": 500 }` (milliseconds).
+ */
+export type Step =
+  | { click: string }
+  | { hover: string }
+  | { fill: [selector: string, value: string] }
+  | { press: string }
+  | { waitFor: string }
+  | { wait: number };
+
+/** A page in a certain state, e.g. with the menu open or with form errors. */
+export interface StateConfig {
+  /** Short name without spaces, shown in reports as "#state:<name>". */
+  name: string;
+  /** Page to open first. Default: the first of `urls`. */
+  url?: string;
+  steps: Step[];
+}
+
 /** Shape of surjection.config.json. Every field can also be given as a CLI flag. */
 export interface SurjectionConfig {
   /** Absolute URLs, or paths resolved against baseUrl. */
@@ -25,6 +47,8 @@ export interface SurjectionConfig {
   viewport?: string;
   /** Also press Tab through every page to find focus traps and missing focus indicators. */
   keyboard?: boolean;
+  /** Pages in other states: run the steps, then check like any other page. */
+  states?: StateConfig[];
   /** Also check reflow at 320 px and text spacing. */
   layout?: boolean;
   /** Folder for screenshots of the affected elements, as evidence for reports. */

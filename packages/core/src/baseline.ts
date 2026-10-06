@@ -14,7 +14,8 @@ export interface Baseline {
 function pathOf(url: string): string {
   try {
     const parsed = new URL(url);
-    return parsed.pathname + parsed.search;
+    // A page state ("#state:menu-open") is part of the identity, other fragments are not.
+    return parsed.pathname + parsed.search + (parsed.hash.startsWith("#state:") ? parsed.hash : "");
   } catch {
     return url;
   }

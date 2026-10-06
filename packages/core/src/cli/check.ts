@@ -7,8 +7,9 @@ import { toJUnit } from "../report/junit";
 import { toMarkdown } from "../report/markdown";
 import { captureEvidence } from "../screenshots";
 import type { PageResult, ResultsFile } from "../types";
-import { parseViewport, resolveUrls, type SurjectionConfig } from "./config";
+import { parseViewport, resolveUrls, type StateConfig, type SurjectionConfig } from "./config";
 import { loadSitemap } from "./sitemap";
+import { runSteps } from "./steps";
 
 export interface CheckRun extends SurjectionConfig {
   updateBaseline?: boolean;
@@ -54,9 +55,9 @@ export async function collectUrls(run: CheckRun): Promise<string[]> {
     const fromSitemap = await loadSitemap(resolveUrls([run.sitemap], run.baseUrl)[0] as string);
     urls.push(...fromSitemap.slice(0, run.maxPages ?? 50));
   }
-  if (urls.length === 0)
+  if (urls.length === 0 && !run.states?.length)
     throw new Error("No URLs to check. Pass URLs, --sitemap or a config file.");
-  return resolveUrls(urls, run.baseUrl);
+  return urls.length > 0 ? resolveUrls(urls, run.baseUrl) : [];
 }
 
 export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckOutcome> {
@@ -80,10 +81,19 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
       isMobile: run.viewport === "mobile",
       ...(run.storageState && { storageState: run.storageState }),
     });
-    for (const url of urls) {
+    const targets = [
+      ...urls.map((url) => ({ url, label: url, state: undefined as StateConfig | undefined })),
+      ...(run.states ?? []).map((state) => {
+        const open = state.url ?? run.urls?.[0] ?? "/";
+        const url = resolveUrls([open], run.baseUrl)[0] as string;
+        return { url, label: `${url}#state:${state.name}`, state };
+      }),
+    ];
+    for (const target of targets) {
       const page = await context.newPage();
       try {
-        await page.goto(url, { waitUntil: "load" });
+        await page.goto(target.url, { waitUntil: "load" });
+        if (target.state) await runSteps(page, target.state);
         const result = await checkPage(page, {
           ...(run.standard && { standard: run.standard }),
           ...(run.bestPractice && { bestPractice: run.bestPractice }),
@@ -93,11 +103,12 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
           ...(run.keyboard && { keyboard: true }),
           ...(run.layout && { layout: true }),
         });
+        if (target.state) result.url = target.label;
         if (run.screenshots)
           await captureEvidence(page, result, { dir: run.screenshots, pageIndex: pages.length });
         pages.push(result);
         const count = result.findings.reduce((n, f) => n + f.nodes.length, 0);
-        log(`${count === 0 ? "✓" : "✗"} ${url} (${count} issue${count === 1 ? "" : "s"})`);
+        log(`${count === 0 ? "✓" : "✗"} ${target.label} (${count} issue${count === 1 ? "" : "s"})`);
       } finally {
         await page.close();
       }

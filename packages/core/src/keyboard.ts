@@ -23,6 +23,9 @@ interface Texts {
   focusHelp: string;
   focusDescription: string;
   focusSummary: string;
+  orderHelp: string;
+  orderDescription: string;
+  orderSummary: string;
 }
 
 const TEXTS: Record<"de" | "fr" | "it" | "en", Texts> = {
@@ -36,6 +39,11 @@ const TEXTS: Record<"de" | "fr" | "it" | "en", Texts> = {
     focusDescription: "Ensures that keyboard users can see which element has focus.",
     focusSummary:
       "Looks the same with and without focus. Add a :focus-visible style, e.g. an outline.",
+    orderHelp: "Focus order must follow the visual order",
+    orderDescription:
+      "Ensures that Tab moves through the page in a sequence that matches what users see.",
+    orderSummary:
+      "Focus jumps up the page to here from the previous element. Check the DOM order, CSS order and positive tabindex values.",
   },
   de: {
     trapHelp: "Der Tastaturfokus darf nicht gefangen sein",
@@ -47,6 +55,11 @@ const TEXTS: Record<"de" | "fr" | "it" | "en", Texts> = {
     focusDescription: "Stellt sicher, dass Tastaturnutzer sehen, welches Element den Fokus hat.",
     focusSummary:
       "Sieht mit und ohne Fokus gleich aus. Ergänze einen :focus-visible-Stil, z. B. eine Umrandung.",
+    orderHelp: "Die Fokusreihenfolge muss der sichtbaren Reihenfolge folgen",
+    orderDescription:
+      "Stellt sicher, dass Tab die Seite in einer Reihenfolge durchläuft, die dem Sichtbaren entspricht.",
+    orderSummary:
+      "Der Fokus springt vom vorigen Element hierher weiter nach oben. DOM-Reihenfolge, CSS-order und positive tabindex-Werte prüfen.",
   },
   fr: {
     trapHelp: "Le focus clavier ne doit pas être piégé",
@@ -58,6 +71,11 @@ const TEXTS: Record<"de" | "fr" | "it" | "en", Texts> = {
     focusDescription: "Vérifie que les utilisateurs du clavier voient quel élément a le focus.",
     focusSummary:
       "Identique avec et sans focus. Ajoutez un style :focus-visible, par exemple un contour.",
+    orderHelp: "L'ordre du focus doit suivre l'ordre visuel",
+    orderDescription:
+      "Vérifie que Tab parcourt la page dans un ordre qui correspond à ce que voient les utilisateurs.",
+    orderSummary:
+      "Le focus remonte dans la page jusqu'ici depuis l'élément précédent. Vérifier l'ordre du DOM, l'order CSS et les tabindex positifs.",
   },
   it: {
     trapHelp: "Il focus della tastiera non deve restare intrappolato",
@@ -69,8 +87,16 @@ const TEXTS: Record<"de" | "fr" | "it" | "en", Texts> = {
     focusDescription: "Verifica che chi usa la tastiera veda quale elemento ha il focus.",
     focusSummary:
       "Appare uguale con e senza focus. Aggiungere uno stile :focus-visible, ad esempio un contorno.",
+    orderHelp: "L'ordine del focus deve seguire l'ordine visivo",
+    orderDescription:
+      "Verifica che Tab percorra la pagina in una sequenza corrispondente a ciò che gli utenti vedono.",
+    orderSummary:
+      "Il focus risale nella pagina fino a qui dall'elemento precedente. Controllare l'ordine del DOM, l'order CSS e i tabindex positivi.",
   },
 };
+
+/** Pixels the focus may move up the page before it counts as a jump. */
+const JUMP_BACK = 200;
 
 const DOCS = "https://packages.sweber.dev/surjection/docs/guides/keyboard";
 
@@ -85,6 +111,9 @@ interface Collected {
   targets: string[];
   html: string[];
   unfocused: string[];
+  /** Page position of each element, and whether it sits in a fixed or sticky layer. */
+  tops: number[];
+  layered: boolean[];
 }
 
 /** Runs in the page. Collects visible, focusable elements and their look without focus. */
@@ -136,6 +165,14 @@ function collect(exclude: string[]): Collected {
     targets: elements.map(path),
     html: elements.map((el) => el.outerHTML.slice(0, 200)),
     unfocused: elements.map(look),
+    tops: elements.map((el) => Math.round(el.getBoundingClientRect().top + window.scrollY)),
+    layered: elements.map((el) => {
+      for (let p: Element | null = el; p; p = p.parentElement) {
+        const position = getComputedStyle(p).position;
+        if (position === "fixed" || position === "sticky") return true;
+      }
+      return false;
+    }),
   };
 }
 
@@ -216,6 +253,29 @@ export async function checkKeyboard(
       criteria: [{ id: "2.1.2", level: "A", en301549: "9.2.1.2" }],
       bestPractice: false,
       nodes: [...cycle].sort((a, b) => a - b).map((i) => node(i, t.trapSummary)),
+    });
+  }
+
+  // Focus order: following Tab, the next element must not sit far above the previous one.
+  const order = [...focused.keys()];
+  const jumps: number[] = [];
+  for (let n = 1; n < order.length; n++) {
+    const previous = order[n - 1] as number;
+    const current = order[n] as number;
+    if (info.layered[previous] || info.layered[current]) continue;
+    if ((info.tops[current] as number) < (info.tops[previous] as number) - JUMP_BACK)
+      jumps.push(current);
+  }
+  if (jumps.length > 0) {
+    findings.push({
+      rule: "surjection-focus-order",
+      impact: "moderate",
+      description: t.orderDescription,
+      help: t.orderHelp,
+      helpUrl: `${DOCS}#focus-order`,
+      criteria: [{ id: "2.4.3", level: "A", en301549: "9.2.4.3" }],
+      bestPractice: false,
+      nodes: jumps.slice(0, 10).map((i) => node(i, t.orderSummary)),
     });
   }
 
