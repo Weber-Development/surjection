@@ -16,12 +16,13 @@
         "guides/vitest",
         "guides/baseline",
         "guides/statement",
-        "guides/react"
+        "guides/react",
+        "guides/upgrade-1-0"
       ]
     },
     {
       "label": "Reference",
-      "items": ["reference/config", "reference/api"]
+      "items": ["reference/config", "reference/api", "reference/stability"]
     },
     {
       "label": "Surjection Pro",

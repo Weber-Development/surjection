@@ -37,7 +37,7 @@ Importing it registers `expect(element).toBeAccessible(options?)`.
 
 Node only. `runCheck(options, browser?)`, `loadConfig`, `loadSitemap`, `launchChromium`, `runStatement(config, out, checklist?)`, `runInit`, and the types `SurjectionConfig`, `StateConfig` and `Step`.
 
-Everything not listed on this page is internal, even when it is exported. It can change in any release.
+Everything not listed on this page is internal, even when it is exported. It can change in any release. See [Stability and versioning](stability.md).
 
 ## Result types
 
