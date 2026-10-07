@@ -4,6 +4,7 @@ export { reportMessages } from "./i18n";
 export { countByImpact, toPageResult } from "./normalize";
 export { toJUnit } from "./report/junit";
 export { type ReportOptions, toMarkdown } from "./report/markdown";
+export { toSarif } from "./report/sarif";
 export { axeRunOptions, checkDocument } from "./run";
 export {
   type ConformanceStatus,
@@ -18,6 +19,7 @@ export type {
   Criterion,
   Finding,
   FindingNode,
+  FixedItem,
   Impact,
   Locale,
   PageResult,

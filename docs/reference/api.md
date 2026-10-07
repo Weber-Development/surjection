@@ -11,6 +11,7 @@ Works in the browser, jsdom and Node.
 |---|---|
 | `checkDocument(context?, options?)` | Run the check in the current document, returns a `PageResult` |
 | `toMarkdown(pages, { locale, project, includeIncomplete })` | Markdown report |
+| `toJUnit(pages)` / `toSarif(pages)` | JUnit XML and SARIF 2.1.0 |
 | `createBaseline(pages)` / `applyBaseline(page, baseline)` | Baseline handling |
 | `failingResult(page, { baseline, failOn })` | Findings that fail after baseline and threshold |
 | `generateStatement(input)` | Accessibility statement as `{ title, markdown, html }` |
@@ -25,7 +26,8 @@ Works in the browser, jsdom and Node.
 | `checkPage(page, options?)` | Check a Playwright page |
 | `expectAccessible(page, options?)` | Check and throw when issues remain. `keyboard: true` adds the keyboard check |
 | `checkLayout(page, options?)` | Check reflow at 320 px and text spacing; returns findings. `layout: true` in `expectAccessible` adds it |
-| `checkKeyboard(page, options?)` | Press Tab through the page; returns findings for focus traps and missing focus indicators |
+| `checkKeyboard(page, options?)` | Press Tab through the page; returns findings for focus traps, missing focus indicators and a jumping focus order |
+| `captureEvidence(page, result, { dir, pageIndex })` | Screenshot every affected element and store the path in `node.screenshot` |
 
 ## `@sweberdev/surjection/vitest`
 
@@ -33,7 +35,9 @@ Importing it registers `expect(element).toBeAccessible(options?)`.
 
 ## `@sweberdev/surjection/node`
 
-Node only. `runCheck(options, browser?)`, `loadConfig`, `loadSitemap`, `launchChromium`, `runStatement`.
+Node only. `runCheck(options, browser?)`, `loadConfig`, `loadSitemap`, `launchChromium`, `runStatement(config, out, checklist?)`, `runInit`, and the types `SurjectionConfig`, `StateConfig` and `Step`.
+
+Everything not listed on this page is internal, even when it is exported. It can change in any release.
 
 ## Result types
 
@@ -45,6 +49,7 @@ interface PageResult {
   findings: Finding[];
   passedRules: number;
   incomplete: Finding[]; // needs manual review
+  fixed?: { rule: string; help: string; target: string; before?: string; after?: string }[]; // with --compare-with
 }
 
 interface Finding {
@@ -54,7 +59,7 @@ interface Finding {
   helpUrl: string;
   criteria: { id: string; level?: "A" | "AA" | "AAA"; en301549: string }[];
   bestPractice: boolean;
-  nodes: { target: string; html: string; summary: string }[];
+  nodes: { target: string; html: string; summary: string; screenshot?: string }[];
 }
 
 interface ResultsFile {

@@ -28,6 +28,8 @@ Elements are matched by page path, rule and selector (the same fingerprint as th
 
 Writes one accessible HTML page with a row per project: latest status, change since the previous run and a trend line. Locales: `de`, `de-CH`, `fr`, `it`, `en`.
 
+The page has a search field, a filter for projects that got worse since the last check and a sort order (name, most issues, biggest increase). The controls need JavaScript and are hidden without it; the table is complete either way.
+
 Keep the history folder in a private repository or a shared drive. In CI, record after each check and publish the dashboard as a build artefact.
 
 ## badge

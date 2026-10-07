@@ -11,6 +11,8 @@ export {
   loadConfig,
   parseViewport,
   resolveUrls,
+  type StateConfig,
+  type Step,
   type SurjectionConfig,
   VIEWPORTS,
 } from "./cli/config";

@@ -25,12 +25,16 @@ npx surjection-checklist status --checklist checklist.json
 
 The editor saves your progress in the browser until you download the file. It works offline and sends nothing anywhere.
 
+## Evidence and reviewer
+
+For every criterion the editor has a note, the name of the person who tested ("Tested by"), the date (set when you decide), evidence links or references (one per line: a ticket, a video, a file name) and screenshots as evidence (PNG, JPEG, WebP or GIF, up to 400 KB each). Images are stored inside `checklist.json`, so the file stays self-contained. Reports show links and images next to each criterion; only `https` links are made clickable. The Markdown list and the Word report name the evidence.
+
 ## Into the statement and the report
 
 ```sh
 npx surjection-checklist statement --checklist checklist.json --locale de --out statement-fields.json
 ```
 
-Merge the fields into your statement config and run `surjection statement`. Pass the checklist to the [report](report.md) with `--checklist` to include it as a section.
+Merge the fields into your statement config and run `surjection statement`, or skip the merge and pass the checklist directly: `surjection statement --config statement.json --checklist checklist.json --out erklaerung.html`. Pass the checklist to the [report](report.md) with `--checklist` to include it as a section.
 
 `statement` refuses to run while criteria are still untested. The status is "fully conformant" only when no criterion failed, and every failed criterion becomes a known issue (your note, or the criterion title). Whether the result holds remains your judgement as the tester.

@@ -31,6 +31,8 @@ export interface CheckOutcome {
   /** Pages reduced to findings that fail the run. */
   failing: PageResult[];
   failed: boolean;
+  /** Pages that could not be loaded; the run continues without them. */
+  loadErrors: string[];
 }
 
 /** Loads Playwright lazily so the core package works without it. */
@@ -80,6 +82,7 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
   const ownBrowser = browser ? undefined : await launchChromium();
   const active = (browser ?? ownBrowser) as Browser;
   const pages: PageResult[] = [];
+  const loadErrors: string[] = [];
   try {
     if (run.storageState && !existsSync(run.storageState))
       throw new Error(`Storage state ${run.storageState} not found.`);
@@ -98,35 +101,54 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
         return { url, label: `${url}#state:${state.name}`, state };
       }),
     ];
-    for (const target of targets) {
-      const page = await context.newPage();
-      try {
-        await page.goto(target.url, { waitUntil: "load" });
-        if (target.state) await runSteps(page, target.state);
-        const result = await checkPage(page, {
-          ...(run.standard && { standard: run.standard }),
-          ...(run.bestPractice && { bestPractice: run.bestPractice }),
-          ...(run.disableRules && { disableRules: run.disableRules }),
-          ...(run.exclude && { exclude: run.exclude }),
-          ...(run.locale && { locale: run.locale }),
-          ...(run.keyboard && { keyboard: true }),
-          ...(run.layout && { layout: true }),
-        });
-        if (target.state) result.url = target.label;
-        if (run.screenshots)
-          await captureEvidence(page, result, { dir: run.screenshots, pageIndex: pages.length });
-        if (previousRun)
-          await recordFixed(page, result, previousRun, {
-            ...(run.screenshots && { dir: run.screenshots }),
-            pageIndex: pages.length,
+    const slots: (PageResult | undefined)[] = new Array(targets.length).fill(undefined);
+    let next = 0;
+    const worker = async () => {
+      while (next < targets.length) {
+        const index = next++;
+        const target = targets[index] as (typeof targets)[number];
+        const page = await context.newPage();
+        try {
+          try {
+            await page.goto(target.url, { waitUntil: "load", timeout: 30000 });
+          } catch (error) {
+            const reason =
+              error instanceof Error ? (error.message.split("\n")[0] ?? "") : String(error);
+            loadErrors.push(`${target.label}: ${reason}`);
+            log(`! ${target.label} (could not be loaded: ${reason})`);
+            continue;
+          }
+          if (target.state) await runSteps(page, target.state);
+          const result = await checkPage(page, {
+            ...(run.standard && { standard: run.standard }),
+            ...(run.bestPractice && { bestPractice: run.bestPractice }),
+            ...(run.disableRules && { disableRules: run.disableRules }),
+            ...(run.exclude && { exclude: run.exclude }),
+            ...(run.locale && { locale: run.locale }),
+            ...(run.keyboard && { keyboard: true }),
+            ...(run.layout && { layout: true }),
           });
-        pages.push(result);
-        const count = result.findings.reduce((n, f) => n + f.nodes.length, 0);
-        log(`${count === 0 ? "✓" : "✗"} ${target.label} (${count} issue${count === 1 ? "" : "s"})`);
-      } finally {
-        await page.close();
+          if (target.state) result.url = target.label;
+          if (run.screenshots)
+            await captureEvidence(page, result, { dir: run.screenshots, pageIndex: index });
+          if (previousRun)
+            await recordFixed(page, result, previousRun, {
+              ...(run.screenshots && { dir: run.screenshots }),
+              pageIndex: index,
+            });
+          slots[index] = result;
+          const count = result.findings.reduce((n, f) => n + f.nodes.length, 0);
+          log(
+            `${count === 0 ? "✓" : "✗"} ${target.label} (${count} issue${count === 1 ? "" : "s"})`,
+          );
+        } finally {
+          await page.close();
+        }
       }
-    }
+    };
+    const size = Math.max(1, Math.min(run.concurrency ?? 1, 8, targets.length));
+    await Promise.all(Array.from({ length: size }, worker));
+    for (const result of slots) if (result) pages.push(result);
     await context.close();
   } finally {
     await ownBrowser?.close();
@@ -165,5 +187,5 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
   }
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown);
 
-  return { pages, failing, failed };
+  return { pages, failing, failed, loadErrors };
 }

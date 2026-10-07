@@ -36,6 +36,16 @@ npx surjection statement --config statement.json --out erklaerung.html
 
 The output extension decides the format: `.html` writes HTML, anything else Markdown.
 
+## From the Pro checklist
+
+If you work through the manual checklist of [Surjection Pro](../pro/checklist.md), the statement can be derived from it. Leave `status` out of `statement.json` and pass the checklist:
+
+```sh
+npx surjection statement --config statement.json --checklist checklist.json --out erklaerung.html
+```
+
+Status follows from the decisions (no failed criterion: `full`, some: `partial`, none passed: `none`), every failed criterion becomes a known issue with its note and planned fix date, and the date of the last test becomes `lastReviewedOn`. Known issues you list in `statement.json` stay and are not duplicated. While criteria are still untested the command stops with an error, because a statement must not claim more than was checked.
+
 ## Fields
 
 | Field | Meaning |

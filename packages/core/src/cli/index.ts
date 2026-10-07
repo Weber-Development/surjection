@@ -7,7 +7,7 @@ import { runStatement } from "./statement";
 
 const HELP = `Usage:
   surjection check [urls...] [options]
-  surjection statement --config statement.json --out erklaerung.md
+  surjection statement --config statement.json [--checklist checklist.json] --out erklaerung.md
   surjection init [--base-url https://example.ch] [--sitemap] [--project "Muster AG"] [--no-workflow]
 
 check options:
@@ -28,6 +28,7 @@ check options:
   --out-sarif <file>     Write SARIF 2.1.0 for tools that read static analysis results
   --color-scheme <s>     light | dark: emulate the visitor's colour scheme
   --compare-with <file>  Earlier --out-json results: fixed issues get before/after screenshots (with --screenshots)
+  --concurrency <n>      Check up to 8 pages at once (default: 1), for large sitemaps
   --reduced-motion       Emulate "reduce motion"
   --viewport <size>      desktop (default) | mobile | <width>x<height>
   --screenshots <dir>    Screenshot every affected element (evidence for Pro reports)
@@ -54,13 +55,17 @@ export async function main(argv: string[]): Promise<number> {
   if (command === "statement") {
     const { values } = parseArgs({
       args: rest,
-      options: { config: { type: "string" }, out: { type: "string" } },
+      options: {
+        config: { type: "string" },
+        out: { type: "string" },
+        checklist: { type: "string" },
+      },
     });
     if (!values.config || !values.out) {
       console.error("statement needs --config and --out.");
       return 2;
     }
-    runStatement(values.config, values.out);
+    runStatement(values.config, values.out, values.checklist);
     console.log(`Statement written to ${values.out}.`);
     return 0;
   }
@@ -113,6 +118,7 @@ export async function main(argv: string[]): Promise<number> {
       "color-scheme": { type: "string" },
       "reduced-motion": { type: "boolean" },
       "compare-with": { type: "string" },
+      concurrency: { type: "string" },
       viewport: { type: "string" },
       keyboard: { type: "boolean" },
       layout: { type: "boolean" },
@@ -142,6 +148,7 @@ export async function main(argv: string[]): Promise<number> {
     ...(values["out-sarif"] && { outSarif: values["out-sarif"] }),
     ...(values["color-scheme"] && { colorScheme: parseColorScheme(values["color-scheme"]) }),
     ...(values["reduced-motion"] && { reducedMotion: true }),
+    ...(values.concurrency && { concurrency: Number(values.concurrency) }),
     ...(values["compare-with"] && { compareWith: values["compare-with"] }),
     ...(values.viewport && { viewport: values.viewport }),
     ...(values.keyboard && { keyboard: true }),
@@ -149,6 +156,11 @@ export async function main(argv: string[]): Promise<number> {
     ...(values.screenshots && { screenshots: values.screenshots }),
     ...(values["storage-state"] && { storageState: values["storage-state"] }),
   });
+  if (outcome.loadErrors.length > 0) {
+    console.error(`\n${outcome.loadErrors.length} page(s) could not be checked:`);
+    for (const line of outcome.loadErrors) console.error(`  ${line}`);
+    return 2;
+  }
   if (outcome.failed) {
     const issues = outcome.failing.reduce(
       (n, p) => n + p.findings.reduce((m, f) => m + f.nodes.length, 0),

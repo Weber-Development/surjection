@@ -390,6 +390,7 @@ describe("config schema", () => {
         "storageState",
         "colorScheme",
         "compareWith",
+        "concurrency",
         "reducedMotion",
         "states",
       ].sort(),
@@ -459,5 +460,48 @@ describe("compare with an earlier run", () => {
         browser,
       ),
     ).rejects.toThrow("not found");
+  });
+});
+
+describe("many pages", () => {
+  it("checks in parallel with the same results in the same order", async () => {
+    const urls = [
+      "good.html",
+      "bad.html",
+      "keyboard.html",
+      "layout-ok.html",
+      "bad.html",
+      "good.html",
+    ].map(fixture);
+    const base = { urls, baseline: join(dir, "none.json"), log: silent };
+    const serial = await runCheck(base, browser);
+    const parallel = await runCheck({ ...base, concurrency: 4 }, browser);
+    const summary = (o: typeof serial) => o.pages.map((p) => `${p.url}:${p.findings.length}`);
+    expect(summary(parallel)).toEqual(summary(serial));
+  });
+
+  it("keeps going when a page cannot be loaded and reports it", async () => {
+    const outcome = await runCheck(
+      {
+        urls: [fixture("good.html"), "http://127.0.0.1:9/nothing", fixture("bad.html")],
+        baseline: join(dir, "none.json"),
+        log: silent,
+      },
+      browser,
+    );
+    expect(outcome.pages).toHaveLength(2);
+    expect(outcome.loadErrors).toHaveLength(1);
+    expect(outcome.loadErrors[0]).toContain("127.0.0.1:9");
+  });
+});
+
+describe("target size (WCAG 2.5.8)", () => {
+  it("is covered by axe-core in the default standard", async () => {
+    const outcome = await runCheck(
+      { urls: [fixture("target.html")], baseline: join(dir, "none.json"), log: silent },
+      browser,
+    );
+    const rules = outcome.pages[0]?.findings.map((f) => f.rule) ?? [];
+    expect(rules).toContain("target-size");
   });
 });

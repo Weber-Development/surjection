@@ -57,6 +57,8 @@ export interface SurjectionConfig {
   layout?: boolean;
   /** Folder for screenshots of the affected elements, as evidence for reports. */
   screenshots?: string;
+  /** Pages checked at the same time, 1 to 8. Default: 1. */
+  concurrency?: number;
   /** Results of an earlier run (--out-json). Fixed issues get a before and after screenshot. */
   compareWith?: string;
   /** Playwright storage state (cookies, local storage) to check pages behind a login. */

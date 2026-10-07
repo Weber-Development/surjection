@@ -45,6 +45,7 @@
       "type": "string",
       "description": "Playwright storage state for pages behind a login."
     },
+    "concurrency": { "type": "integer", "minimum": 1, "maximum": 8, "default": 1 },
     "compareWith": {
       "type": "string",
       "description": "Results (--out-json) of an earlier run; fixed issues get before and after screenshots."
