@@ -1,5 +1,11 @@
 # @sweberdev/surjection
 
+## 0.9.0
+
+### Minor Changes
+
+- 0bb33a5: New: `--concurrency <n>` checks up to 8 pages at once; pages that cannot be loaded no longer stop the run (the others are checked, exit code 2). `surjection statement --checklist` derives status and known issues from a Pro checklist. `toSarif` and the `StateConfig`/`Step`/`FixedItem` types are exported. Target size (WCAG 2.5.8) is covered and tested.
+
 ## 0.8.0
 
 ### Minor Changes
