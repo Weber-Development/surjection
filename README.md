@@ -22,6 +22,8 @@ npx surjection statement --config statement.json --out erklaerung.html
 
 Options can also live in `surjection.config.json`. In GitHub Actions the report is added to the job summary automatically. `--out-json` writes all results for Surjection Pro reports and history, `--out-junit` a JUnit XML for GitLab, Azure DevOps or Jenkins, `--out-sarif` SARIF 2.1.0, `--color-scheme dark` and `--reduced-motion` emulate visitor settings, `--viewport mobile` checks the mobile layout, `--screenshots dir` photographs every affected element for Pro reports, `--layout` tests reflow at 320 px and text spacing, `--keyboard` finds focus traps and missing focus indicators, and `--storage-state` checks pages behind a login. `npx surjection init` sets up the config file and a GitHub Actions workflow.
 
+Since 2.0: `flows` check a multi-step journey after the steps you choose, `npx surjection coverage` lists which of the 55 WCAG 2.2 A/AA criteria are tested automatically, `@sweberdev/surjection/component` checks single components in Storybook and Testing Library, and results files carry a stable `id` per finding. Needs Node 22 or newer; coming from 1.x, see the [migration guide](docs/guides/migrating-to-2.md).
+
 ## Playwright
 
 ```ts
