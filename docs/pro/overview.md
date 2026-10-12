@@ -7,8 +7,8 @@ Surjection Pro adds what an agency needs to hand accessibility work to a client.
 
 | Package | What it does |
 |---|---|
-| [`@weber-development/surjection-report`](report.md) | Client report as HTML or PDF with your logo and colour, in German, Swiss German, French, Italian and English |
-| [`@weber-development/surjection-history`](history.md) | Records every run per project and renders a dashboard with status, change and trend |
+| [`@weber-development/surjection-report`](report.md) | Client report as HTML, PDF or Word with your logo and colour, in German, Swiss German, French, Italian and English; from 2.0 also the WCAG-EM conformance report and an ACR |
+| [`@weber-development/surjection-history`](history.md) | Records every run per project and renders a dashboard with status, change and trend; from 2.0 also re-tests of only the affected pages |
 | [`@weber-development/surjection-checklist`](checklist.md) | The 55 WCAG 2.2 A/AA success criteria with instructions for manual testing, a browser editor and export to the accessibility statement |
 
 ## Licence and plans
@@ -47,5 +47,7 @@ npx surjection-checklist edit --checklist checklist.json --locale de --out check
 npx surjection-report --results a11y.json --brand brand.json --checklist checklist.json \
   --history-dir .surjection-history --locale de --out report.pdf
 ```
+
+After a fix, re-check only what was affected and update the checklist ([re-test](history.md#re-test)); for a client who needs a statement of the evaluation, write the [conformance report or ACR](report.md#conformance-report-wcag-em-and-acr).
 
 > **Caution:** A report or checklist from Surjection documents a test. It does not certify conformance with WCAG, EN 301 549, the BFSG, the Swiss BehiG or any other law. See [Legal notice](../legal.md).

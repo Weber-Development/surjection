@@ -94,6 +94,21 @@ npx surjection-history regressions --fail-on serious \
 
 In code: `notificationText(reports)`, `sendWebhook(url, text)` and `sendMail({ … })`.
 
+## Re-test
+
+After a fix you do not need to check the whole site again. `retest` builds a config with only the pages, states and flows that had findings, and `merge` puts the new results into the earlier ones:
+
+```sh
+npx surjection-history retest --config surjection.config.json --results a11y.json \
+  --out retest.config.json                      # --criteria 1.4.3,2.4.7 limits it to these criteria
+npx surjection check --config retest.config.json --out-json retest.json
+npx surjection-history merge --base a11y.json --update retest.json --out a11y.json
+```
+
+`merge` prints how many findings were fixed, remain or are new in the re-tested pages. Pages that were not re-tested stay as they were, with their old test date, so the merged file is a complete results file for [reports](report.md) and the [checklist](checklist.md). Pages that cannot be checked again from the config, for example a state you removed, are listed as skipped. `retest` exits with 1 when nothing needs a re-test; `merge` exits with 1 when new findings appeared.
+
+A re-test is a shortcut for the time between full checks. A change in one place can break another page, so run the full check regularly (for example nightly or before a report).
+
 ## API
 
 ```ts

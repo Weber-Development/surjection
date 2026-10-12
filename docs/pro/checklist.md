@@ -20,6 +20,7 @@ npx surjection-checklist status --checklist checklist.json
 | `apply` | Marks criteria with automated findings as failed. It never marks a criterion as passed, because automated rules cover only part of it |
 | `edit` | Writes a self-contained HTML page. Set each criterion to passed, failed or not applicable, add notes, then download the updated `checklist.json` |
 | `status` | Prints how many criteria are untested, passed, failed and not applicable |
+| `retest` | After a [re-test](history.md#re-test): criteria that failed only because of automated findings and have none left go back to untested, with a note. A person confirms the fix by hand; automated tests never mark a criterion as passed. Criteria you failed yourself stay failed |
 | `markdown` | Writes the checklist as Markdown |
 | `statement` | Writes the conformance status and known issues for the [accessibility statement](../guides/statement.md) |
 

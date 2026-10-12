@@ -85,6 +85,37 @@ With `--out report.docx` you get the same content as an editable Word document, 
 
 With `--out massnahmen.csv` you get a fix list instead of a report: one row per affected element with page, rule, impact, WCAG and EN 301 549 criteria, selector and what to do, plus empty Status and Note columns for the team that fixes it. The file uses `;` and a BOM, so Excel opens it directly with umlauts intact. Only `--results` and `--locale` are needed. In code: `toFixListCsv(results, { locale: "de-CH" })`.
 
+## Conformance report (WCAG-EM) and ACR
+
+From Pro 2.0 the same command writes two documents for clients who ask for a statement of the evaluation, not only a list of issues. Both need the checklist, because the outcome of each criterion is decided by a person:
+
+```sh
+npx surjection-report --results a11y.json --brand brand.json --checklist checklist.json \
+  --type conformance --locale de --out konformitaet.pdf
+
+npx surjection-report --results a11y.json --brand brand.json --checklist checklist.json \
+  --type acr --product "Webshop" --product-version 4.2 --partial 1.4.3,2.4.7 --out acr.docx
+```
+
+**Conformance report** (`--type conformance`, `.html`, `.pdf` or `.docx`, in German, Swiss German, French, Italian and English) follows the steps of the W3C method WCAG-EM: scope (from the checklist), the sample of pages with date, the outcome per success criterion, the failed criteria with notes and planned fix, method and limits. The outcomes use the WCAG-EM terms:
+
+| Outcome | When |
+|---|---|
+| Passed | The checklist says "pass" and automated tests found nothing for the criterion |
+| Failed | The checklist says "fail", or automated tests found affected elements |
+| Inapplicable | The checklist says "not applicable" |
+| Cannot tell | Not decided yet, or the checklist and the automated tests disagree |
+
+Every row names the EN 301 549 clause, the basis (automated elements and pages, tester and date) and your remarks. If the checklist says "pass" but automated tests found affected elements, the criterion shows "cannot tell" and the report lists the conflict under "Points to resolve before publishing". Automated tests never mark a criterion as passed.
+
+**ACR** (`--type acr`, English) is an Accessibility Conformance Report in the usual structure: product information, evaluation methods, terms and one table per level with the conformance levels *Supports*, *Partially Supports*, *Does Not Support*, *Not Applicable* and *Not Evaluated*. Failed criteria are reported as *Does Not Support*; list the ones that fail only in part with `--partial`. It is Surjection's own document, not a copy of the VPAT template, and not an official VPAT. If you use the name VPAT in your marketing, check the terms of the Information Technology Industry Council.
+
+Both documents state that they confirm no legal conformity. The sample is the list of pages in the results: choosing a representative sample is the evaluator's job.
+
+### Mapping WCAG 2.2 to EN 301 549
+
+Clause 9 of EN 301 549 V3.2.1 corresponds to WCAG 2.1. Success criteria that exist only in WCAG 2.2 (2.4.11, 2.5.7, 2.5.8, 3.2.6, 3.3.7, 3.3.8) have no clause there and are shown as "WCAG 2.2 only". Surjection maintains the mapping: when the standard changes it is updated in a Pro release, and every report names the mapping version (`MAPPING.version`, currently `2026.10`) so a report can be traced to the mapping it used.
+
 ## PDF
 
 PDF output uses Playwright with Chromium:
