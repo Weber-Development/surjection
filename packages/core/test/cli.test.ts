@@ -396,6 +396,7 @@ describe("config schema", () => {
         "disableRules",
         "exclude",
         "failOn",
+        "flows",
         "locale",
         "baseline",
         "project",
