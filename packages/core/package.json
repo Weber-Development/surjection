@@ -15,6 +15,9 @@
   },
   "type": "module",
   "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -47,6 +50,16 @@
       "require": {
         "types": "./dist/vitest.d.cts",
         "default": "./dist/vitest.cjs"
+      }
+    },
+    "./component": {
+      "import": {
+        "types": "./dist/component.d.ts",
+        "default": "./dist/component.js"
+      },
+      "require": {
+        "types": "./dist/component.d.cts",
+        "default": "./dist/component.cjs"
       }
     },
     "./node": {

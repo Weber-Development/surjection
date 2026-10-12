@@ -14,7 +14,15 @@ git add surjection-baseline.json
 npx surjection check --config surjection.config.json
 ```
 
-Each entry is the page path, the rule and the element selector, for example `/shop|image-alt|#hero`. Host and protocol are ignored, so the same baseline works for localhost, preview and production.
+Each entry records the page path, the rule and the element selector, plus the stable `id` the finding has in the [results file](../reference/results-format.md):
+
+```json
+{ "id": "3f2a9c01b7de", "page": "/shop", "rule": "image-alt", "target": "#hero", "note": "Ticket SHOP-214" }
+```
+
+Host and protocol are ignored, so the same baseline works for localhost, preview and production. The optional `note` is yours: write down why an entry is accepted or which ticket tracks it. It survives `--update-baseline` as long as the finding stays.
+
+A baseline written by Surjection 1.x (a list of `"/shop|image-alt|#hero"` strings) is still read. Convert it once with `surjection convert surjection-baseline.json --out surjection-baseline.json`.
 
 When you fix an issue, run `--update-baseline` again so the entry disappears and the problem cannot come back unnoticed.
 

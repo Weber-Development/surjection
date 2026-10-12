@@ -6,37 +6,79 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string" },
+    "$schema": {
+      "type": "string"
+    },
     "urls": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "Absolute URLs, or paths resolved against baseUrl."
     },
     "baseUrl": {
       "type": "string",
       "description": "Origin that relative URLs are resolved against."
     },
-    "sitemap": { "type": "string", "description": "Sitemap URL or path whose pages are checked." },
-    "maxPages": { "type": "integer", "minimum": 1, "default": 50 },
-    "standard": { "enum": ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"], "default": "wcag22aa" },
-    "bestPractice": { "type": "boolean", "default": false },
-    "disableRules": { "type": "array", "items": { "type": "string" } },
+    "sitemap": {
+      "type": "string",
+      "description": "Sitemap URL or path whose pages are checked."
+    },
+    "maxPages": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 50
+    },
+    "standard": {
+      "enum": ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"],
+      "default": "wcag22aa"
+    },
+    "bestPractice": {
+      "type": "boolean",
+      "default": false
+    },
+    "disableRules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "exclude": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "CSS selectors to skip on every page."
     },
-    "failOn": { "enum": ["minor", "moderate", "serious", "critical"], "default": "minor" },
-    "locale": { "enum": ["de", "de-CH", "fr", "it", "en"], "default": "en" },
-    "baseline": { "type": "string", "default": "surjection-baseline.json" },
-    "project": { "type": "string", "description": "Project name shown in reports." },
+    "failOn": {
+      "enum": ["minor", "moderate", "serious", "critical"],
+      "default": "minor"
+    },
+    "locale": {
+      "enum": ["de", "de-CH", "fr", "it", "en"],
+      "default": "en"
+    },
+    "baseline": {
+      "type": "string",
+      "default": "surjection-baseline.json"
+    },
+    "project": {
+      "type": "string",
+      "description": "Project name shown in reports."
+    },
     "viewport": {
       "type": "string",
       "pattern": "^(desktop|mobile|\\d{2,5}x\\d{2,5})$",
       "default": "desktop"
     },
-    "keyboard": { "type": "boolean", "default": false },
-    "layout": { "type": "boolean", "default": false },
+    "keyboard": {
+      "type": "boolean",
+      "default": false
+    },
+    "layout": {
+      "type": "boolean",
+      "default": false
+    },
     "screenshots": {
       "type": "string",
       "description": "Folder for screenshots of affected elements."
@@ -45,13 +87,23 @@
       "type": "string",
       "description": "Playwright storage state for pages behind a login."
     },
-    "concurrency": { "type": "integer", "minimum": 1, "maximum": 8, "default": 1 },
+    "concurrency": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8,
+      "default": 1
+    },
     "compareWith": {
       "type": "string",
       "description": "Results (--out-json) of an earlier run; fixed issues get before and after screenshots."
     },
-    "colorScheme": { "enum": ["light", "dark"] },
-    "reducedMotion": { "type": "boolean", "default": false },
+    "colorScheme": {
+      "enum": ["light", "dark"]
+    },
+    "reducedMotion": {
+      "type": "boolean",
+      "default": false
+    },
     "states": {
       "type": "array",
       "items": {
@@ -59,8 +111,13 @@
         "additionalProperties": false,
         "required": ["name", "steps"],
         "properties": {
-          "name": { "type": "string", "pattern": "^[^\\s#]+$" },
-          "url": { "type": "string" },
+          "name": {
+            "type": "string",
+            "pattern": "^[^\\s#]+$"
+          },
+          "url": {
+            "type": "string"
+          },
           "steps": {
             "type": "array",
             "items": {
@@ -69,13 +126,21 @@
                   "type": "object",
                   "additionalProperties": false,
                   "required": ["click"],
-                  "properties": { "click": { "type": "string" } }
+                  "properties": {
+                    "click": {
+                      "type": "string"
+                    }
+                  }
                 },
                 {
                   "type": "object",
                   "additionalProperties": false,
                   "required": ["hover"],
-                  "properties": { "hover": { "type": "string" } }
+                  "properties": {
+                    "hover": {
+                      "type": "string"
+                    }
+                  }
                 },
                 {
                   "type": "object",
@@ -84,7 +149,9 @@
                   "properties": {
                     "fill": {
                       "type": "array",
-                      "items": { "type": "string" },
+                      "items": {
+                        "type": "string"
+                      },
                       "minItems": 2,
                       "maxItems": 2
                     }
@@ -94,25 +161,142 @@
                   "type": "object",
                   "additionalProperties": false,
                   "required": ["press"],
-                  "properties": { "press": { "type": "string" } }
+                  "properties": {
+                    "press": {
+                      "type": "string"
+                    }
+                  }
                 },
                 {
                   "type": "object",
                   "additionalProperties": false,
                   "required": ["waitFor"],
-                  "properties": { "waitFor": { "type": "string" } }
+                  "properties": {
+                    "waitFor": {
+                      "type": "string"
+                    }
+                  }
                 },
                 {
                   "type": "object",
                   "additionalProperties": false,
                   "required": ["wait"],
-                  "properties": { "wait": { "type": "integer", "minimum": 0, "maximum": 10000 } }
+                  "properties": {
+                    "wait": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    }
+                  }
                 }
               ]
             }
           }
         }
       }
+    },
+    "flows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "steps"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[^\\s#]+$"
+          },
+          "url": {
+            "type": "string"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["click"],
+                  "properties": {
+                    "click": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["hover"],
+                  "properties": {
+                    "hover": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["fill"],
+                  "properties": {
+                    "fill": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "minItems": 2,
+                      "maxItems": 2
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["press"],
+                  "properties": {
+                    "press": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["waitFor"],
+                  "properties": {
+                    "waitFor": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["wait"],
+                  "properties": {
+                    "wait": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["check"],
+                  "properties": {
+                    "check": {
+                      "type": "string",
+                      "pattern": "^[^\\s#]+$"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "description": "Multi-step journeys: the page is checked at every {\"check\": \"<label>\"} step (at the end if there is none), shown in reports as #flow:<name>:<label>."
     }
   }
 }

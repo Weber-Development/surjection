@@ -19,6 +19,8 @@ export interface FindingNode {
   html: string;
   /** Short explanation of what to fix on this element. */
   summary: string;
+  /** Stable id of this finding (results version 2): the same issue keeps its id across runs. */
+  id?: string;
   /** Screenshot of the element, written by `surjection check --screenshots <dir>`. */
   screenshot?: string;
 }
@@ -71,10 +73,25 @@ export interface CheckOptions {
   locale?: Locale;
 }
 
+/** How a run was configured; recorded in results of version 2. */
+export interface ResultsRun {
+  standard: string;
+  viewport: string;
+  locale?: string;
+  keyboard: boolean;
+  layout: boolean;
+  colorScheme?: string;
+  reducedMotion?: boolean;
+  startedAt: string;
+  finishedAt: string;
+}
+
 /** File written by `surjection check --out-json`; input for Surjection Pro reports and history. */
 export interface ResultsFile {
-  version: 1;
+  version: 2;
   project?: string;
   createdAt: string;
+  tool: { name: string; version: string };
+  run?: ResultsRun;
   pages: PageResult[];
 }

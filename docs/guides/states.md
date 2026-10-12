@@ -39,4 +39,4 @@ Each state loads its `url` (default: the first URL), runs the steps in order and
 
 Every step waits up to five seconds. If one fails, the check stops with the state and step named, for example `State "menu-open", step "click #menu" failed: ...`, so a changed page is not mistaken for an accessible one.
 
-For anything more complicated use Playwright: navigate in your test and call `expectAccessible(page)` at the point you want to check.
+For journeys over several pages or steps, with a check after each step, see [Flows](flows.md). For anything more complicated use Playwright: navigate in your test and call `expectAccessible(page)` at the point you want to check.

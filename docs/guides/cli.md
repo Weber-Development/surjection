@@ -51,6 +51,14 @@ Sitemap indexes are followed one level deep. `--max-pages` (default 50) keeps la
 | `--storage-state <file>` | | Playwright storage state, to check pages behind a login |
 | `--project <name>` | | Project name in reports |
 
+## Other commands
+
+| Command | Purpose |
+|---|---|
+| `surjection coverage [--json] [--out <file>]` | Which of the 55 WCAG 2.2 A/AA criteria Surjection tests automatically, see [Coverage](coverage.md) |
+| `surjection convert <file> --out <file>` | Rewrite a results file or baseline of version 1 as version 2, see [Results format](../reference/results-format.md) |
+| `surjection statement`, `surjection init` | See [Statement](statement.md) and [Start a project](#start-a-project) |
+
 ## Exit codes
 
 | Code | Meaning |

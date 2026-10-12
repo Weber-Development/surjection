@@ -10,19 +10,28 @@
         "guides/cli",
         "guides/keyboard",
         "guides/states",
+        "guides/flows",
         "guides/layout",
         "guides/github-actions",
         "guides/playwright",
         "guides/vitest",
         "guides/baseline",
+        "guides/coverage",
+        "guides/components",
         "guides/statement",
         "guides/react",
+        "guides/migrating-to-2",
         "guides/upgrade-1-0"
       ]
     },
     {
       "label": "Reference",
-      "items": ["reference/config", "reference/api", "reference/stability"]
+      "items": [
+        "reference/config",
+        "reference/results-format",
+        "reference/api",
+        "reference/stability"
+      ]
     },
     {
       "label": "Surjection Pro",

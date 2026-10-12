@@ -1,9 +1,10 @@
-import { copyFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import type { Page } from "@playwright/test";
 import { pathOf } from "./baseline";
+import { readResults } from "./cli/convert";
 import { shootElement } from "./screenshots";
-import type { FixedItem, PageResult, ResultsFile } from "./types";
+import type { FixedItem, PageResult } from "./types";
 
 /** Per page path: what the previous run found. */
 export type PreviousRun = Map<string, PreviousEntry[]>;
@@ -25,7 +26,7 @@ const MAX_PER_PAGE = 10;
  */
 export function loadPreviousRun(file: string, screenshotsDir: string | undefined): PreviousRun {
   if (!existsSync(file)) throw new Error(`Results to compare with not found: ${file}`);
-  const previous = JSON.parse(readFileSync(file, "utf8")) as ResultsFile;
+  const previous = readResults(file);
   const map: PreviousRun = new Map();
   let n = 0;
   for (const page of previous.pages) {

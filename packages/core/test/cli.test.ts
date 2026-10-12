@@ -4,7 +4,14 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { Browser } from "@playwright/test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { launchChromium, parseViewport, resolveUrls, runCheck, runInit } from "../src/node";
+import {
+  convertFile,
+  launchChromium,
+  parseViewport,
+  resolveUrls,
+  runCheck,
+  runInit,
+} from "../src/node";
 import type { ResultsFile } from "../src/types";
 
 const fixture = (name: string) => pathToFileURL(join(__dirname, "fixtures", name)).toString();
@@ -102,9 +109,14 @@ describe("runCheck", () => {
       ),
     );
     // Same path as the baseline entries, so only the new input fails.
+    // Written as a baseline of version 1, which must keep working.
     const entries = JSON.parse(readFileSync(baseline, "utf8"));
+    expect(entries.version).toBe(2);
     const path = new URL(pathToFileURL(changed)).pathname;
-    entries.entries = entries.entries.map((e: string) => e.replace(/^[^|]+/, path));
+    entries.version = 1;
+    entries.entries = entries.entries.map(
+      (e: { rule: string; target: string }) => `${path}|${e.rule}|${e.target}`,
+    );
     writeFileSync(baseline, JSON.stringify(entries));
     const withNew = await runCheck(
       { urls: [pathToFileURL(changed).toString()], baseline, log: silent },
@@ -299,8 +311,12 @@ describe("states", () => {
       log: silent,
     };
     await runCheck({ ...run, updateBaseline: true }, browser);
-    const accepted = JSON.parse(readFileSync(baseline, "utf8")) as { entries: string[] };
-    expect(accepted.entries.some((e) => e.includes("#state:menu-open|image-alt"))).toBe(true);
+    const accepted = JSON.parse(readFileSync(baseline, "utf8")) as {
+      entries: { page: string; rule: string }[];
+    };
+    expect(
+      accepted.entries.some((e) => e.page.includes("#state:menu-open") && e.rule === "image-alt"),
+    ).toBe(true);
     expect((await runCheck(run, browser)).failed).toBe(false);
   });
 });
@@ -503,5 +519,134 @@ describe("target size (WCAG 2.5.8)", () => {
     );
     const rules = outcome.pages[0]?.findings.map((f) => f.rule) ?? [];
     expect(rules).toContain("target-size");
+  });
+});
+
+describe("results version 2", () => {
+  it("records tool, run and a stable id per finding", async () => {
+    const outJson = join(dir, "v2.json");
+    const run = { urls: [fixture("bad.html")], baseline: join(dir, "none.json"), log: silent };
+    await runCheck({ ...run, outJson, keyboard: true }, browser);
+    const file = JSON.parse(readFileSync(outJson, "utf8")) as ResultsFile;
+    expect(file.version).toBe(2);
+    expect(file.tool.name).toBe("surjection");
+    expect(file.run).toMatchObject({ standard: "wcag22aa", keyboard: true, viewport: "desktop" });
+    const ids = file.pages.flatMap((p) => p.findings.flatMap((f) => f.nodes.map((n) => n.id)));
+    expect(ids.length).toBeGreaterThan(0);
+    expect(ids.every((id) => /^[0-9a-f]{12}$/.test(id ?? ""))).toBe(true);
+    const second = join(dir, "v2b.json");
+    await runCheck({ ...run, outJson: second, keyboard: true }, browser);
+    const again = JSON.parse(readFileSync(second, "utf8")) as ResultsFile;
+    expect(again.pages.flatMap((p) => p.findings.flatMap((f) => f.nodes.map((n) => n.id)))).toEqual(
+      ids,
+    );
+  });
+
+  it("converts results and baselines of version 1", () => {
+    const v1 = join(dir, "v1.json");
+    writeFileSync(
+      v1,
+      JSON.stringify({
+        version: 1,
+        createdAt: "2026-01-01T00:00:00.000Z",
+        pages: [
+          {
+            url: "https://a.ch/x",
+            title: "X",
+            testedAt: "2026-01-01T00:00:00.000Z",
+            passedRules: 1,
+            incomplete: [],
+            findings: [
+              {
+                rule: "label",
+                impact: "critical",
+                description: "d",
+                help: "h",
+                helpUrl: "u",
+                criteria: [],
+                bestPractice: false,
+                nodes: [{ target: "#a", html: "<input>", summary: "s" }],
+              },
+            ],
+          },
+        ],
+      }),
+    );
+    const out = join(dir, "v1-as-v2.json");
+    expect(convertFile(v1, out)).toBe("results");
+    const converted = JSON.parse(readFileSync(out, "utf8")) as ResultsFile;
+    expect(converted.version).toBe(2);
+    const id = converted.pages[0]?.findings[0]?.nodes[0]?.id;
+
+    const oldBaseline = join(dir, "old-baseline.json");
+    writeFileSync(
+      oldBaseline,
+      JSON.stringify({ version: 1, createdAt: "x", entries: ["/x|label|#a"] }),
+    );
+    const newBaseline = join(dir, "new-baseline.json");
+    expect(convertFile(oldBaseline, newBaseline)).toBe("baseline");
+    const baseline = JSON.parse(readFileSync(newBaseline, "utf8"));
+    expect(baseline.version).toBe(2);
+    expect(baseline.entries[0]).toMatchObject({ id, page: "/x", rule: "label", target: "#a" });
+  });
+
+  it("rejects files of a newer version", () => {
+    const file = join(dir, "v3.json");
+    writeFileSync(file, JSON.stringify({ version: 3, pages: [] }));
+    expect(() => convertFile(file, join(dir, "out.json"))).toThrow("versions 1 and 2");
+  });
+});
+
+describe("flows", () => {
+  const flow = {
+    name: "menu",
+    url: fixture("states.html"),
+    steps: [{ check: "start" }, { click: "#menu" }, { check: "open" }],
+  };
+
+  it("checks after every check step", async () => {
+    const outcome = await runCheck(
+      { baseline: join(dir, "none.json"), flows: [flow], log: silent },
+      browser,
+    );
+    expect(outcome.pages.map((p) => p.url.replace(/^.*#/, "#"))).toEqual([
+      "#flow:menu:start",
+      "#flow:menu:open",
+    ]);
+    const issues = outcome.pages.map((p) => p.findings.length);
+    expect(issues[0]).toBe(0);
+    expect(issues[1]).toBeGreaterThan(0);
+  });
+
+  it("checks at the end when there is no check step", async () => {
+    const outcome = await runCheck(
+      {
+        baseline: join(dir, "none.json"),
+        flows: [{ name: "single", url: fixture("states.html"), steps: [{ click: "#menu" }] }],
+        log: silent,
+      },
+      browser,
+    );
+    expect(outcome.pages.map((p) => p.url.replace(/^.*#/, "#"))).toEqual(["#flow:single:end"]);
+  });
+
+  it("names the flow and the step when a step fails", async () => {
+    await expect(
+      runCheck(
+        {
+          baseline: join(dir, "none.json"),
+          flows: [{ name: "broken", url: fixture("states.html"), steps: [{ click: "#missing" }] }],
+          log: silent,
+        },
+        browser,
+      ),
+    ).rejects.toThrow('Flow "broken", step "click #missing" failed');
+  });
+
+  it("keeps flow steps apart in the baseline", async () => {
+    const baseline = join(dir, "flow-baseline.json");
+    const run = { baseline, flows: [flow], log: silent };
+    await runCheck({ ...run, updateBaseline: true }, browser);
+    expect((await runCheck(run, browser)).failed).toBe(false);
   });
 });

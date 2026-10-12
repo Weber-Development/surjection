@@ -45,6 +45,7 @@ The CLI reads `surjection.config.json` from the working directory, or the file p
 | `colorScheme` | `light` \| `dark` | |
 | `reducedMotion` | boolean | `false` |
 | `states` | `{ name, url?, steps }[]` | `[]` |
+| `flows` | `{ name, url?, steps }[]`, steps may contain `{ check }` | `[]` |
 | `project` | string | |
 
 ## Editor support (JSON schema)

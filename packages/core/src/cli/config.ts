@@ -24,6 +24,21 @@ export interface StateConfig {
   steps: Step[];
 }
 
+/** A step of a flow: any state step, or `{ "check": "<label>" }` to check the page at this point. */
+export type FlowStep = Step | { check: string };
+
+/**
+ * A user journey, e.g. cart, address, payment. The page is checked at every `check` step and
+ * shown in reports as "#flow:<name>:<label>". Without a `check` step it is checked at the end.
+ */
+export interface FlowConfig {
+  /** Short name without spaces. */
+  name: string;
+  /** Page to open first. Default: the first of `urls`. */
+  url?: string;
+  steps: FlowStep[];
+}
+
 /** Shape of surjection.config.json. Every field can also be given as a CLI flag. */
 export interface SurjectionConfig {
   /** Absolute URLs, or paths resolved against baseUrl. */
@@ -53,6 +68,8 @@ export interface SurjectionConfig {
   reducedMotion?: boolean;
   /** Pages in other states: run the steps, then check like any other page. */
   states?: StateConfig[];
+  /** Multi-step journeys with checks after the steps you choose. */
+  flows?: FlowConfig[];
   /** Also check reflow at 320 px and text spacing. */
   layout?: boolean;
   /** Folder for screenshots of the affected elements, as evidence for reports. */

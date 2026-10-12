@@ -1,0 +1,9 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "@sweberdev/surjection": "1.0.0",
+    "@sweberdev/surjection-react": "1.0.0"
+  },
+  "changesets": []
+}

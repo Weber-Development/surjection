@@ -1,17 +1,25 @@
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import type { Browser } from "@playwright/test";
 import { failingResult } from "../assert";
-import { applyBaseline, type Baseline, createBaseline } from "../baseline";
+import { applyBaseline, createBaseline, normalizeBaseline } from "../baseline";
 import { loadPreviousRun, recordFixed } from "../compare";
 import { checkPage } from "../playwright";
 import { toJUnit } from "../report/junit";
 import { toMarkdown } from "../report/markdown";
 import { toSarif } from "../report/sarif";
+import { createResults } from "../results";
 import { captureEvidence } from "../screenshots";
-import type { PageResult, ResultsFile } from "../types";
-import { parseViewport, resolveUrls, type StateConfig, type SurjectionConfig } from "./config";
+import type { PageResult } from "../types";
+import { VERSION } from "../version";
+import {
+  type FlowConfig,
+  parseViewport,
+  resolveUrls,
+  type StateConfig,
+  type SurjectionConfig,
+} from "./config";
 import { loadSitemap } from "./sitemap";
-import { runSteps } from "./steps";
+import { runFlow, runSteps } from "./steps";
 
 export interface CheckRun extends SurjectionConfig {
   updateBaseline?: boolean;
@@ -61,7 +69,7 @@ export async function collectUrls(run: CheckRun): Promise<string[]> {
     const fromSitemap = await loadSitemap(resolveUrls([run.sitemap], run.baseUrl)[0] as string);
     urls.push(...fromSitemap.slice(0, run.maxPages ?? 50));
   }
-  if (urls.length === 0 && !run.states?.length)
+  if (urls.length === 0 && !run.states?.length && !run.flows?.length)
     throw new Error("No URLs to check. Pass URLs, --sitemap or a config file.");
   return urls.length > 0 ? resolveUrls(urls, run.baseUrl) : [];
 }
@@ -72,8 +80,9 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
   const baselinePath = run.baseline ?? "surjection-baseline.json";
   const baseline =
     !run.updateBaseline && existsSync(baselinePath)
-      ? (JSON.parse(readFileSync(baselinePath, "utf8")) as Baseline)
+      ? normalizeBaseline(JSON.parse(readFileSync(baselinePath, "utf8")))
       : undefined;
+  const startedAt = new Date();
 
   const previousRun = run.compareWith
     ? loadPreviousRun(run.compareWith, run.screenshots)
@@ -94,14 +103,24 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
       ...(run.storageState && { storageState: run.storageState }),
     });
     const targets = [
-      ...urls.map((url) => ({ url, label: url, state: undefined as StateConfig | undefined })),
+      ...urls.map((url) => ({
+        url,
+        label: url,
+        state: undefined as StateConfig | undefined,
+        flow: undefined as FlowConfig | undefined,
+      })),
       ...(run.states ?? []).map((state) => {
         const open = state.url ?? run.urls?.[0] ?? "/";
         const url = resolveUrls([open], run.baseUrl)[0] as string;
-        return { url, label: `${url}#state:${state.name}`, state };
+        return { url, label: `${url}#state:${state.name}`, state, flow: undefined };
+      }),
+      ...(run.flows ?? []).map((flow) => {
+        const open = flow.url ?? run.urls?.[0] ?? "/";
+        const url = resolveUrls([open], run.baseUrl)[0] as string;
+        return { url, label: `${url}#flow:${flow.name}`, state: undefined, flow };
       }),
     ];
-    const slots: (PageResult | undefined)[] = new Array(targets.length).fill(undefined);
+    const slots: PageResult[][] = targets.map(() => []);
     let next = 0;
     const worker = async () => {
       while (next < targets.length) {
@@ -118,29 +137,40 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
             log(`! ${target.label} (could not be loaded: ${reason})`);
             continue;
           }
-          if (target.state) await runSteps(page, target.state);
-          const result = await checkPage(page, {
-            ...(run.standard && { standard: run.standard }),
-            ...(run.bestPractice && { bestPractice: run.bestPractice }),
-            ...(run.disableRules && { disableRules: run.disableRules }),
-            ...(run.exclude && { exclude: run.exclude }),
-            ...(run.locale && { locale: run.locale }),
-            ...(run.keyboard && { keyboard: true }),
-            ...(run.layout && { layout: true }),
-          });
-          if (target.state) result.url = target.label;
-          if (run.screenshots)
-            await captureEvidence(page, result, { dir: run.screenshots, pageIndex: index });
-          if (previousRun)
-            await recordFixed(page, result, previousRun, {
-              ...(run.screenshots && { dir: run.screenshots }),
-              pageIndex: index,
+          const inspect = async (label: string, evidenceIndex: number) => {
+            const result = await checkPage(page, {
+              ...(run.standard && { standard: run.standard }),
+              ...(run.bestPractice && { bestPractice: run.bestPractice }),
+              ...(run.disableRules && { disableRules: run.disableRules }),
+              ...(run.exclude && { exclude: run.exclude }),
+              ...(run.locale && { locale: run.locale }),
+              ...(run.keyboard && { keyboard: true }),
+              ...(run.layout && { layout: true }),
             });
-          slots[index] = result;
-          const count = result.findings.reduce((n, f) => n + f.nodes.length, 0);
-          log(
-            `${count === 0 ? "✓" : "✗"} ${target.label} (${count} issue${count === 1 ? "" : "s"})`,
-          );
+            result.url = label;
+            if (run.screenshots)
+              await captureEvidence(page, result, {
+                dir: run.screenshots,
+                pageIndex: evidenceIndex,
+              });
+            if (previousRun)
+              await recordFixed(page, result, previousRun, {
+                ...(run.screenshots && { dir: run.screenshots }),
+                pageIndex: evidenceIndex,
+              });
+            slots[index]?.push(result);
+            const count = result.findings.reduce((n, f) => n + f.nodes.length, 0);
+            log(`${count === 0 ? "✓" : "✗"} ${label} (${count} issue${count === 1 ? "" : "s"})`);
+          };
+          if (target.flow) {
+            let n = 0;
+            await runFlow(page, target.flow, (step) =>
+              inspect(`${target.label}:${step}`, 1000 + index * 50 + n++),
+            );
+          } else {
+            if (target.state) await runSteps(page, target.state);
+            await inspect(target.label, index);
+          }
         } finally {
           await page.close();
         }
@@ -148,14 +178,20 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
     };
     const size = Math.max(1, Math.min(run.concurrency ?? 1, 8, targets.length));
     await Promise.all(Array.from({ length: size }, worker));
-    for (const result of slots) if (result) pages.push(result);
+    for (const results of slots) pages.push(...results);
     await context.close();
   } finally {
     await ownBrowser?.close();
   }
 
   if (run.updateBaseline) {
-    writeFileSync(baselinePath, `${JSON.stringify(createBaseline(pages), null, 2)}\n`);
+    const previousBaseline = existsSync(baselinePath)
+      ? normalizeBaseline(JSON.parse(readFileSync(baselinePath, "utf8")))
+      : undefined;
+    writeFileSync(
+      baselinePath,
+      `${JSON.stringify(createBaseline(pages, new Date(), previousBaseline), null, 2)}\n`,
+    );
     log(`Baseline written to ${baselinePath}.`);
   }
 
@@ -175,14 +211,22 @@ export async function runCheck(run: CheckRun, browser?: Browser): Promise<CheckO
   });
   if (run.outMarkdown) writeFileSync(run.outMarkdown, markdown);
   if (run.outJUnit) writeFileSync(run.outJUnit, toJUnit(reported));
-  if (run.outSarif) writeFileSync(run.outSarif, toSarif(reported));
+  if (run.outSarif) writeFileSync(run.outSarif, toSarif(reported, VERSION));
   if (run.outJson) {
-    const file: ResultsFile = {
-      version: 1,
+    const file = createResults(pages, {
       ...(run.project && { project: run.project }),
-      createdAt: new Date().toISOString(),
-      pages,
-    };
+      run: {
+        standard: run.standard ?? "wcag22aa",
+        viewport: run.viewport ?? "desktop",
+        ...(run.locale && { locale: run.locale }),
+        keyboard: run.keyboard ?? false,
+        layout: run.layout ?? false,
+        ...(run.colorScheme && { colorScheme: run.colorScheme }),
+        ...(run.reducedMotion && { reducedMotion: true }),
+        startedAt: startedAt.toISOString(),
+        finishedAt: new Date().toISOString(),
+      },
+    });
     writeFileSync(run.outJson, `${JSON.stringify(file, null, 2)}\n`);
   }
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown);

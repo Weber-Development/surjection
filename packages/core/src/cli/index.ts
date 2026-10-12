@@ -1,14 +1,22 @@
+import { writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
+import { coverage, coverageMarkdown } from "../coverage";
 import type { Impact, Locale } from "../types";
 import { runCheck } from "./check";
 import { loadConfig } from "./config";
+import { convertFile } from "./convert";
 import { runInit } from "./init";
 import { runStatement } from "./statement";
 
 const HELP = `Usage:
   surjection check [urls...] [options]
   surjection statement --config statement.json [--checklist checklist.json] --out erklaerung.md
+  surjection coverage [--json] [--out <file>]
+  surjection convert <results-or-baseline.json> --out <file>
   surjection init [--base-url https://example.ch] [--sitemap] [--project "Muster AG"] [--no-workflow]
+
+coverage lists which of the 55 WCAG 2.2 A/AA criteria Surjection tests automatically.
+convert rewrites results files and baselines of version 1 as version 2.
 
 check options:
   --config <file>        Config file (default: surjection.config.json if present)
@@ -68,6 +76,36 @@ export async function main(argv: string[]): Promise<number> {
     runStatement(values.config, values.out, values.checklist);
     console.log(`Statement written to ${values.out}.`);
     return 0;
+  }
+  if (command === "coverage") {
+    const { values } = parseArgs({
+      args: rest,
+      options: { json: { type: "boolean" }, out: { type: "string" } },
+    });
+    const text = values.json ? `${JSON.stringify(coverage(), null, 2)}\n` : coverageMarkdown();
+    if (values.out) writeFileSync(values.out, text);
+    else console.log(text);
+    return 0;
+  }
+  if (command === "convert") {
+    const { values, positionals } = parseArgs({
+      args: rest,
+      allowPositionals: true,
+      options: { out: { type: "string" } },
+    });
+    const [input] = positionals;
+    if (!input || !values.out) {
+      console.error("convert needs an input file and --out <file>.");
+      return 2;
+    }
+    try {
+      const kind = convertFile(input, values.out);
+      console.log(`Converted ${kind} ${input} to version 2: ${values.out}`);
+      return 0;
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : String(error));
+      return 2;
+    }
   }
   if (command === "init") {
     const { values } = parseArgs({
