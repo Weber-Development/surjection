@@ -8,7 +8,7 @@ Surjection Pro adds what an agency needs to hand accessibility work to a client.
 | Package | What it does |
 |---|---|
 | [`@weber-development/surjection-report`](report.md) | Client report as HTML, PDF or Word with your logo and colour, in German, Swiss German, French, Italian and English; from 2.0 also the WCAG-EM conformance report and an ACR |
-| [`@weber-development/surjection-history`](history.md) | Records every run per project and renders a dashboard with status, change and trend; from 2.0 also re-tests of only the affected pages |
+| [`@weber-development/surjection-history`](history.md) | Records every run per project and renders a dashboard with status, change and trend; from 2.0 also re-tests of only the affected pages, from 2.1 a pull request comment and ready workflows for scheduled monitoring |
 | [`@weber-development/surjection-checklist`](checklist.md) | The 55 WCAG 2.2 A/AA success criteria with instructions for manual testing, a browser editor and export to the accessibility statement |
 
 ## Licence and plans
