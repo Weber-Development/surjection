@@ -90,3 +90,14 @@ pnpm build && pnpm typecheck && pnpm test && pnpm lint
 ## License
 
 MIT
+
+<!-- pro-promo -->
+## Surjection Pro
+
+Need more than the free package? **Surjection Pro** adds:
+
+- Client reports in your branding (HTML, PDF, Word), WCAG-EM conformance report and ACR export
+- History: every run per project, dashboard, trend, badge and regression check
+- Checklist: the 55 WCAG 2.2 A/AA criteria with manual-testing instructions
+
+Subscriptions from CHF 19 per month, or a one-time lifetime licence. [See what is included](https://packages.sweber.dev/surjection?utm_source=npm&utm_medium=readme&utm_campaign=pro)
